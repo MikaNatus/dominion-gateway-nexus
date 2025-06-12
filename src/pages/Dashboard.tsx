@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import DomainManagement from '@/components/dashboard/DomainManagement';
@@ -11,6 +10,8 @@ interface Domain {
   id: string;
   name: string;
   status: 'active' | 'pending' | 'error';
+  nsStatus: 'connected' | 'pending' | 'error';
+  sslMode: 'flexible' | 'full' | 'strict';
   sslStatus: 'active' | 'pending' | 'none';
   nsServers: string[];
   createdAt: string;
@@ -22,6 +23,8 @@ const Dashboard = () => {
       id: '1',
       name: 'example.com',
       status: 'active',
+      nsStatus: 'connected',
+      sslMode: 'full',
       sslStatus: 'active',
       nsServers: ['ns1.clouddns.ru', 'ns2.clouddns.ru'],
       createdAt: '2024-01-15'
@@ -30,6 +33,8 @@ const Dashboard = () => {
       id: '2',
       name: 'test-site.org',
       status: 'pending',
+      nsStatus: 'pending',
+      sslMode: 'flexible',
       sslStatus: 'pending',
       nsServers: ['ns1.clouddns.ru', 'ns2.clouddns.ru'],
       createdAt: '2024-01-20'
@@ -57,6 +62,8 @@ const Dashboard = () => {
       id: Date.now().toString(),
       name: domainName,
       status: 'pending',
+      nsStatus: 'pending',
+      sslMode: 'flexible',
       sslStatus: 'none',
       nsServers: ['ns1.clouddns.ru', 'ns2.clouddns.ru'],
       createdAt: new Date().toISOString().split('T')[0]
@@ -83,19 +90,10 @@ const Dashboard = () => {
       <main className="container mx-auto px-6 py-8">
         {selectedDomain ? (
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setSelectedDomain(null)}
-                  className="mb-2"
-                >
-                  ← Назад к списку доменов
-                </Button>
-                <h1 className="text-3xl font-bold">Управление доменом: {selectedDomain.name}</h1>
-              </div>
-            </div>
-            <DomainManagement domain={selectedDomain} />
+            <DomainManagement 
+              domain={selectedDomain} 
+              onBack={() => setSelectedDomain(null)} 
+            />
           </div>
         ) : (
           <div>
