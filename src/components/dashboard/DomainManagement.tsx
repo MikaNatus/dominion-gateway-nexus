@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -83,6 +82,10 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
 
   const handleSslModeChange = (value: string) => {
     setSslMode(value as 'flexible' | 'full' | 'strict');
+  };
+
+  const handleRecordTypeChange = (value: string) => {
+    setNewRecord({ ...newRecord, type: value as DNSRecord['type'] });
   };
 
   const handleAddRecord = () => {
@@ -222,9 +225,7 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
                     <Label htmlFor="record-type">Type</Label>
                     <Select
                       value={newRecord.type}
-                      onValueChange={(value) => 
-                        setNewRecord({ ...newRecord, type: value as DNSRecord['type'] })
-                      }
+                      onValueChange={handleRecordTypeChange}
                     >
                       <SelectTrigger>
                         <SelectValue />
