@@ -1,0 +1,97 @@
+
+import React, { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Plus, Globe } from 'lucide-react';
+
+interface AddDomainModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAdd: (domain: string) => void;
+}
+
+const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
+  const [domain, setDomain] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!domain.trim()) return;
+
+    setIsLoading(true);
+    await onAdd(domain.trim());
+    setIsLoading(false);
+    setDomain('');
+    onClose();
+  };
+
+  const isValidDomain = (domain: string) => {
+    const domainRegex = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i;
+    return domainRegex.test(domain);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
+            <Plus className="h-5 w-5" />
+            <span>Add New Domain</span>
+          </DialogTitle>
+          <DialogDescription>
+            Enter your domain name to add it to your DNS management
+          </DialogDescription>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="domain">Domain Name</Label>
+            <div className="relative">
+              <Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="domain"
+                type="text"
+                placeholder="example.com"
+                value={domain}
+                onChange={(e) => setDomain(e.target.value.toLowerCase())}
+                className="pl-10"
+                required
+              />
+            </div>
+            {domain && !isValidDomain(domain) && (
+              <p className="text-sm text-destructive">Please enter a valid domain name</p>
+            )}
+          </div>
+          
+          <div className="flex space-x-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading || !domain || !isValidDomain(domain)}
+              className="flex-1"
+            >
+              {isLoading ? 'Adding...' : 'Add Domain'}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default AddDomainModal;
