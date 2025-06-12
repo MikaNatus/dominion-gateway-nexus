@@ -98,21 +98,33 @@ const Dashboard = () => {
         ) : (
           <div>
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
               <div>
-                <h1 className="text-3xl font-bold mb-2">Панель управления</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2">Панель управления</h1>
                 <p className="text-muted-foreground">
                   Управляйте своими доменами и SSL сертификатами
                 </p>
               </div>
-              <Button onClick={() => setShowAddModal(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Добавить домен
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => window.location.href = '/api-docs'}
+                  className="order-2 sm:order-1"
+                >
+                  📡 API Docs
+                </Button>
+                <Button 
+                  onClick={() => setShowAddModal(true)}
+                  className="order-1 sm:order-2"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Добавить домен
+                </Button>
+              </div>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Всего доменов</CardTitle>
@@ -177,11 +189,11 @@ const Dashboard = () => {
                     {domains.map((domain) => (
                       <div 
                         key={domain.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 cursor-pointer"
+                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg hover:bg-muted/50 cursor-pointer gap-4"
                         onClick={() => setSelectedDomain(domain)}
                       >
                         <div className="flex items-center space-x-4">
-                          <Globe className="h-5 w-5 text-muted-foreground" />
+                          <Globe className="h-5 w-5 text-muted-foreground shrink-0" />
                           <div>
                             <h3 className="font-semibold">{domain.name}</h3>
                             <p className="text-sm text-muted-foreground">
@@ -189,7 +201,7 @@ const Dashboard = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:space-x-4">
                           <div className="text-center">
                             <div className={`inline-block px-2 py-1 text-xs rounded-full ${
                               domain.status === 'active' ? 'bg-green-100 text-green-800' :
