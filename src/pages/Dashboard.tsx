@@ -1,10 +1,21 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import DomainManagement from '@/components/dashboard/DomainManagement';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Globe, Shield, Server, Plus } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Globe, Shield, Server, Plus, Trash2 } from 'lucide-react';
 import AddDomainModal from '@/components/dashboard/AddDomainModal';
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from '@/components/ui/pagination';
+import { toast } from 'sonner';
 
 interface Domain {
   id: string;
@@ -38,11 +49,30 @@ const Dashboard = () => {
       sslStatus: 'pending',
       nsServers: ['ns1.clouddns.ru', 'ns2.clouddns.ru'],
       createdAt: '2024-01-20'
+    },
+    // ... more domains for pagination demo
+    {
+      id: '3',
+      name: 'demo-site.net',
+      status: 'active',
+      nsStatus: 'connected',
+      sslMode: 'full',
+      sslStatus: 'active',
+      nsServers: ['ns1.clouddns.ru', 'ns2.clouddns.ru'],
+      createdAt: '2024-01-25'
     }
   ]);
   
   const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedDomainIds, setSelectedDomainIds] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const domainsPerPage = 5;
+
+  // Pagination logic
+  const totalPages = Math.ceil(domains.length / domainsPerPage);
+  const startIndex = (currentPage - 1) * domainsPerPage;
+  const paginatedDomains = domains.slice(startIndex, startIndex + domainsPerPage);
 
   const user = {
     email: 'user@example.com',
@@ -72,6 +102,28 @@ const Dashboard = () => {
     setShowAddModal(false);
   };
 
+  const handleSelectDomain = (domainId: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedDomainIds([...selectedDomainIds, domainId]);
+    } else {
+      setSelectedDomainIds(selectedDomainIds.filter(id => id !== domainId));
+    }
+  };
+
+  const handleSelectAll = (isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedDomainIds(paginatedDomains.map(domain => domain.id));
+    } else {
+      setSelectedDomainIds([]);
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    setDomains(domains.filter(domain => !selectedDomainIds.includes(domain.id)));
+    setSelectedDomainIds([]);
+    toast.success(`Удалено доменов: ${selectedDomainIds.length}`);
+  };
+
   const stats = {
     totalDomains: domains.length,
     activeDomains: domains.filter(d => d.status === 'active').length,
@@ -87,7 +139,7 @@ const Dashboard = () => {
         onSettingsClick={handleSettingsClick} 
       />
       
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-4 sm:px-6 py-8">
         {selectedDomain ? (
           <div>
             <DomainManagement 
@@ -169,7 +221,19 @@ const Dashboard = () => {
             {/* Domains List */}
             <Card>
               <CardHeader>
-                <CardTitle>Мои домены</CardTitle>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <CardTitle>Мои домены</CardTitle>
+                  {selectedDomainIds.length > 0 && (
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={handleDeleteSelected}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Удалить ({selectedDomainIds.length})
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {domains.length === 0 ? (
@@ -186,23 +250,39 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {domains.map((domain) => (
+                    {/* Select All */}
+                    <div className="flex items-center space-x-2 pb-2 border-b">
+                      <Checkbox
+                        checked={selectedDomainIds.length === paginatedDomains.length && paginatedDomains.length > 0}
+                        onCheckedChange={handleSelectAll}
+                      />
+                      <label className="text-sm font-medium">
+                        Выбрать все на странице
+                      </label>
+                    </div>
+
+                    {/* Domain List */}
+                    {paginatedDomains.map((domain) => (
                       <div 
                         key={domain.id}
-                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg hover:bg-muted/50 cursor-pointer gap-4"
-                        onClick={() => setSelectedDomain(domain)}
+                        className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border rounded-lg hover:bg-muted/50"
                       >
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-3">
+                          <Checkbox
+                            checked={selectedDomainIds.includes(domain.id)}
+                            onCheckedChange={(checked) => handleSelectDomain(domain.id, checked as boolean)}
+                          />
                           <Globe className="h-5 w-5 text-muted-foreground shrink-0" />
-                          <div>
-                            <h3 className="font-semibold">{domain.name}</h3>
+                          <div className="min-w-0">
+                            <h3 className="font-semibold truncate">{domain.name}</h3>
                             <p className="text-sm text-muted-foreground">
                               Добавлен: {domain.createdAt}
                             </p>
                           </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:space-x-4">
-                          <div className="text-center">
+                        
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:ml-auto gap-2 sm:space-x-4">
+                          <div className="flex flex-wrap gap-2">
                             <div className={`inline-block px-2 py-1 text-xs rounded-full ${
                               domain.status === 'active' ? 'bg-green-100 text-green-800' :
                               domain.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
@@ -211,8 +291,6 @@ const Dashboard = () => {
                               {domain.status === 'active' ? 'Активен' :
                                domain.status === 'pending' ? 'Ожидание' : 'Ошибка'}
                             </div>
-                          </div>
-                          <div className="text-center">
                             <div className={`inline-block px-2 py-1 text-xs rounded-full ${
                               domain.sslStatus === 'active' ? 'bg-blue-100 text-blue-800' :
                               domain.sslStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
@@ -222,9 +300,48 @@ const Dashboard = () => {
                                    domain.sslStatus === 'pending' ? 'Ожидание' : 'Ошибка'}
                             </div>
                           </div>
+                          <Button 
+                            size="sm"
+                            onClick={() => setSelectedDomain(domain)}
+                          >
+                            Управление
+                          </Button>
                         </div>
                       </div>
                     ))}
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                      <div className="flex justify-center mt-6">
+                        <Pagination>
+                          <PaginationContent>
+                            <PaginationItem>
+                              <PaginationPrevious 
+                                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                              />
+                            </PaginationItem>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                              <PaginationItem key={page}>
+                                <PaginationLink
+                                  onClick={() => setCurrentPage(page)}
+                                  isActive={currentPage === page}
+                                  className="cursor-pointer"
+                                >
+                                  {page}
+                                </PaginationLink>
+                              </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                              <PaginationNext 
+                                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                                className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                              />
+                            </PaginationItem>
+                          </PaginationContent>
+                        </Pagination>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
