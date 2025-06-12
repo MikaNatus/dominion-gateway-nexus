@@ -12,7 +12,7 @@ interface Domain {
   status: 'active' | 'pending' | 'error';
   nsStatus: 'connected' | 'pending' | 'error';
   sslMode: 'flexible' | 'full' | 'strict';
-  sslStatus: 'active' | 'pending' | 'none';
+  sslStatus: 'active' | 'pending' | 'error';
   nsServers: string[];
   createdAt: string;
 }
@@ -64,7 +64,7 @@ const Dashboard = () => {
       status: 'pending',
       nsStatus: 'pending',
       sslMode: 'flexible',
-      sslStatus: 'none',
+      sslStatus: 'pending',
       nsServers: ['ns1.clouddns.ru', 'ns2.clouddns.ru'],
       createdAt: new Date().toISOString().split('T')[0]
     };
@@ -204,10 +204,10 @@ const Dashboard = () => {
                             <div className={`inline-block px-2 py-1 text-xs rounded-full ${
                               domain.sslStatus === 'active' ? 'bg-blue-100 text-blue-800' :
                               domain.sslStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-gray-100 text-gray-800'
+                              'bg-red-100 text-red-800'
                             }`}>
                               SSL: {domain.sslStatus === 'active' ? 'Активен' :
-                                   domain.sslStatus === 'pending' ? 'Ожидание' : 'Нет'}
+                                   domain.sslStatus === 'pending' ? 'Ожидание' : 'Ошибка'}
                             </div>
                           </div>
                         </div>
