@@ -133,6 +133,11 @@ const Dashboard = () => {
     toast.success(`Удалено доменов: ${selectedDomainIds.length}`);
   };
 
+  const handleUpgrade = () => {
+    // Перенаправляем на страницу оплаты
+    window.location.href = '/payment';
+  };
+
   const stats = {
     totalDomains: domains.length,
     activeDomains: domains.filter(d => d.status === 'active').length,
