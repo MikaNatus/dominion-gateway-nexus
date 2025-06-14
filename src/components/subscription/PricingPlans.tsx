@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Shield, Globe, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface PricingPlansProps {
   currentPlan?: 'free' | 'premium';
@@ -12,6 +13,8 @@ interface PricingPlansProps {
 }
 
 const PricingPlans = ({ currentPlan = 'free', onUpgrade, onManageSubscription }: PricingPlansProps) => {
+  const navigate = useNavigate();
+
   const plans = [
     {
       id: 'free',
@@ -46,6 +49,10 @@ const PricingPlans = ({ currentPlan = 'free', onUpgrade, onManageSubscription }:
       popular: true
     }
   ];
+
+  const handleUpgradeClick = () => {
+    navigate('/payment');
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
@@ -92,7 +99,7 @@ const PricingPlans = ({ currentPlan = 'free', onUpgrade, onManageSubscription }:
                   )}
                 </div>
               ) : plan.id === 'premium' ? (
-                <Button className="w-full" onClick={onUpgrade}>
+                <Button className="w-full" onClick={handleUpgradeClick}>
                   <Zap className="h-4 w-4 mr-2" />
                   Перейти на Премиум
                 </Button>
