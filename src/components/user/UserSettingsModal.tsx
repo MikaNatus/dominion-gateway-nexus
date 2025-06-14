@@ -1,11 +1,12 @@
+
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  NativeDialog,
+  NativeDialogContent,
+  NativeDialogDescription,
+  NativeDialogHeader,
+  NativeDialogTitle,
+} from '@/components/ui/native-dialog';
 import {
   Form,
   FormControl,
@@ -66,18 +67,6 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
       confirm: false
     });
     onClose();
-    
-    // Принудительно убираем pointer-events: none с body
-    setTimeout(() => {
-      document.body.style.removeProperty('pointer-events');
-      // Также убираем со всех элементов, которые могли получить этот стиль
-      const elements = document.querySelectorAll('[style*="pointer-events"]');
-      elements.forEach(el => {
-        if (el instanceof HTMLElement) {
-          el.style.removeProperty('pointer-events');
-        }
-      });
-    }, 100);
   };
 
   const handleCopyApiKey = async () => {
@@ -124,17 +113,17 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <NativeDialog open={isOpen} onOpenChange={handleClose}>
+      <NativeDialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <NativeDialogHeader>
+          <NativeDialogTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
             Настройки аккаунта
-          </DialogTitle>
-          <DialogDescription>
+          </NativeDialogTitle>
+          <NativeDialogDescription>
             Управление профилем, API ключами и безопасностью
-          </DialogDescription>
-        </DialogHeader>
+          </NativeDialogDescription>
+        </NativeDialogHeader>
 
         <div className="space-y-6">
           {/* Информация о пользователе */}
@@ -310,8 +299,8 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
             </CardContent>
           </Card>
         </div>
-      </DialogContent>
-    </Dialog>
+      </NativeDialogContent>
+    </NativeDialog>
   );
 };
 

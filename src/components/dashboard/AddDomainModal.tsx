@@ -1,11 +1,12 @@
+
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  NativeDialog,
+  NativeDialogContent,
+  NativeDialogDescription,
+  NativeDialogHeader,
+  NativeDialogTitle,
+} from '@/components/ui/native-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -39,18 +40,6 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
     setDomain('');
     setIsLoading(false);
     onClose();
-    
-    // Принудительно убираем pointer-events: none с body
-    setTimeout(() => {
-      document.body.style.removeProperty('pointer-events');
-      // Также убираем со всех элементов, которые могли получить этот стиль
-      const elements = document.querySelectorAll('[style*="pointer-events"]');
-      elements.forEach(el => {
-        if (el instanceof HTMLElement) {
-          el.style.removeProperty('pointer-events');
-        }
-      });
-    }, 100);
   };
 
   const isValidDomain = (domain: string) => {
@@ -59,17 +48,17 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
+    <NativeDialog open={isOpen} onOpenChange={handleClose}>
+      <NativeDialogContent className="sm:max-w-md">
+        <NativeDialogHeader>
+          <NativeDialogTitle className="flex items-center space-x-2">
             <Plus className="h-5 w-5" />
             <span>Добавить новый домен</span>
-          </DialogTitle>
-          <DialogDescription>
+          </NativeDialogTitle>
+          <NativeDialogDescription>
             Введите имя домена для добавления в систему управления DNS
-          </DialogDescription>
-        </DialogHeader>
+          </NativeDialogDescription>
+        </NativeDialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -109,8 +98,8 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </NativeDialogContent>
+    </NativeDialog>
   );
 };
 
