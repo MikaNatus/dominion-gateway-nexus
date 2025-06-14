@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import DomainManagement from '@/components/dashboard/DomainManagement';
+import DomainCard from '@/components/dashboard/DomainCard';
 import AddDomainModal from '@/components/dashboard/AddDomainModal';
 import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import UserSettingsModal from '@/components/user/UserSettingsModal';
@@ -14,9 +16,11 @@ interface Domain {
   id: string;
   name: string;
   status: 'active' | 'pending' | 'error';
+  nsStatus: 'connected' | 'pending' | 'error';
   sslMode: 'proxy' | 'direct';
-  records: number;
-  lastUpdated: string;
+  sslStatus: 'active' | 'pending' | 'error';
+  nsServers: string[];
+  createdAt: string;
 }
 
 const Dashboard = () => {
@@ -24,6 +28,7 @@ const Dashboard = () => {
   const [isAddDomainOpen, setIsAddDomainOpen] = useState(false);
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [isUserSettingsOpen, setIsUserSettingsOpen] = useState(false);
+  const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
 
   const user = {
     name: 'John Doe',
@@ -36,25 +41,31 @@ const Dashboard = () => {
       id: '1',
       name: 'example.com',
       status: 'active',
+      nsStatus: 'connected',
       sslMode: 'proxy',
-      records: 5,
-      lastUpdated: '2024-01-14 14:30',
+      sslStatus: 'active',
+      nsServers: ['ns1.clouddns.com', 'ns2.clouddns.com'],
+      createdAt: '2024-01-14T14:30:00Z',
     },
     {
       id: '2',
       name: 'test.com',
       status: 'pending',
+      nsStatus: 'pending',
       sslMode: 'direct',
-      records: 2,
-      lastUpdated: '2024-01-13 18:00',
+      sslStatus: 'pending',
+      nsServers: ['ns1.clouddns.com', 'ns2.clouddns.com'],
+      createdAt: '2024-01-13T18:00:00Z',
     },
     {
       id: '3',
       name: 'demo.net',
       status: 'error',
+      nsStatus: 'error',
       sslMode: 'direct',
-      records: 10,
-      lastUpdated: '2024-01-12 09:45',
+      sslStatus: 'error',
+      nsServers: ['ns1.clouddns.com', 'ns2.clouddns.com'],
+      createdAt: '2024-01-12T09:45:00Z',
     },
   ]);
 
@@ -63,9 +74,11 @@ const Dashboard = () => {
       id: String(domains.length + 1),
       name: domainName,
       status: 'pending',
+      nsStatus: 'pending',
       sslMode: 'direct',
-      records: 0,
-      lastUpdated: 'Just now',
+      sslStatus: 'pending',
+      nsServers: ['ns1.clouddns.com', 'ns2.clouddns.com'],
+      createdAt: new Date().toISOString(),
     };
     setDomains([...domains, newDomain]);
     setIsAddDomainOpen(false);
@@ -83,6 +96,46 @@ const Dashboard = () => {
     setIsSubscriptionOpen(true);
   };
 
+  const handleManageDomain = (domain: Domain) => {
+    setSelectedDomain(domain);
+  };
+
+  const handleBackToDomains = () => {
+    setSelectedDomain(null);
+  };
+
+  // If a domain is selected, show the domain management view
+  if (selectedDomain) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header
+          user={user}
+          onLogout={handleLogout}
+          onSettingsClick={handleSettingsClick}
+          onSubscriptionClick={handleSubscriptionClick}
+        />
+        <main className="container mx-auto px-4 py-8">
+          <DomainManagement 
+            domain={selectedDomain} 
+            onBack={handleBackToDomains}
+          />
+        </main>
+
+        <SubscriptionModal
+          isOpen={isSubscriptionOpen}
+          onClose={() => setIsSubscriptionOpen(false)}
+        />
+
+        <UserSettingsModal
+          isOpen={isUserSettingsOpen}
+          onClose={() => setIsUserSettingsOpen(false)}
+          user={user}
+        />
+      </div>
+    );
+  }
+
+  // Default dashboard view with domain list
   return (
     <div className="min-h-screen bg-background">
       <Header
@@ -100,7 +153,16 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        <DomainManagement domains={domains} />
+        {/* Domain Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {domains.map((domain) => (
+            <DomainCard
+              key={domain.id}
+              domain={domain}
+              onManage={handleManageDomain}
+            />
+          ))}
+        </div>
 
         <Card className="mt-8">
           <CardHeader>
@@ -127,7 +189,7 @@ const Dashboard = () => {
       <AddDomainModal
         isOpen={isAddDomainOpen}
         onClose={() => setIsAddDomainOpen(false)}
-        onAddDomain={handleAddDomain}
+        onAdd={handleAddDomain}
       />
 
       <SubscriptionModal
@@ -138,6 +200,7 @@ const Dashboard = () => {
       <UserSettingsModal
         isOpen={isUserSettingsOpen}
         onClose={() => setIsUserSettingsOpen(false)}
+        user={user}
       />
     </div>
   );
