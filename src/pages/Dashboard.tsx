@@ -262,7 +262,7 @@ const Dashboard = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(domain.status)}
+                      {getStatusBadge(domain.status, true)}
                     </TableCell>
                     <TableCell>
                       {getStatusBadge(domain.nsStatus, true)}
