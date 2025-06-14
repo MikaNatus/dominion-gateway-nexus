@@ -58,6 +58,17 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
     }
   });
 
+  const handleClose = () => {
+    form.reset();
+    setShowApiKey(false);
+    setShowPasswords({
+      current: false,
+      new: false,
+      confirm: false
+    });
+    onClose();
+  };
+
   const handleCopyApiKey = async () => {
     try {
       await navigator.clipboard.writeText(apiKey);
@@ -102,7 +113,7 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

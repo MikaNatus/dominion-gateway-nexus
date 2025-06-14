@@ -33,13 +33,18 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
     onClose();
   };
 
+  const handleClose = () => {
+    setDomain('');
+    onClose();
+  };
+
   const isValidDomain = (domain: string) => {
     const domainRegex = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i;
     return domainRegex.test(domain);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
@@ -75,7 +80,7 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
             <Button
               type="button"
               variant="outline"
-              onClick={onClose}
+              onClick={handleClose}
               className="flex-1"
             >
               Отмена
