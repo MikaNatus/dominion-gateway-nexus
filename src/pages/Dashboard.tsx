@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -145,12 +144,18 @@ const Dashboard = () => {
     window.open(`https://${domainName}`, '_blank');
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, disableHover = false) => {
+    const baseClasses = disableHover ? "pointer-events-none" : "";
     switch (status) {
-      case 'active': return <Badge className="bg-green-100 text-green-800">Активен</Badge>;
-      case 'pending': return <Badge className="bg-yellow-100 text-yellow-800">Ожидание</Badge>;
-      case 'error': return <Badge className="bg-red-100 text-red-800">Ошибка</Badge>;
-      default: return <Badge variant="secondary">Неизвестно</Badge>;
+      case 'active': 
+      case 'connected': 
+        return <Badge className={`bg-green-100 text-green-800 ${baseClasses}`}>Активен</Badge>;
+      case 'pending': 
+        return <Badge className={`bg-yellow-100 text-yellow-800 ${baseClasses}`}>Ожидание</Badge>;
+      case 'error': 
+        return <Badge className={`bg-red-100 text-red-800 ${baseClasses}`}>Ошибка</Badge>;
+      default: 
+        return <Badge variant="secondary" className={baseClasses}>Неизвестно</Badge>;
     }
   };
 
@@ -231,9 +236,6 @@ const Dashboard = () => {
                     <Checkbox
                       checked={isAllSelected}
                       onCheckedChange={handleSelectAll}
-                      ref={(el) => {
-                        if (el) el.indeterminate = isIndeterminate;
-                      }}
                     />
                   </TableHead>
                   <TableHead>Домен</TableHead>
@@ -263,7 +265,7 @@ const Dashboard = () => {
                       {getStatusBadge(domain.status)}
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(domain.nsStatus)}
+                      {getStatusBadge(domain.nsStatus, true)}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
