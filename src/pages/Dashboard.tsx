@@ -363,14 +363,10 @@ const Dashboard = () => {
             <p className="text-sm text-muted-foreground">
               Ознакомьтесь с API или добавьте свой первый домен.
             </p>
-            <div className="mt-4 flex space-x-4">
+            <div className="mt-4">
               <Button variant="outline" onClick={() => navigate('/api-docs')}>
                 <FileText className="w-4 h-4 mr-2" />
                 API Документация
-              </Button>
-              <Button onClick={() => setIsAddDomainOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Добавить домен
               </Button>
             </div>
           </CardContent>
