@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -39,19 +38,19 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
   const handleClose = () => {
     setDomain('');
     setIsLoading(false);
+    onClose();
     
-    // Принудительно убираем pointer-events: none
+    // Принудительно убираем pointer-events: none с body
     setTimeout(() => {
-      document.body.style.pointerEvents = '';
+      document.body.style.removeProperty('pointer-events');
+      // Также убираем со всех элементов, которые могли получить этот стиль
       const elements = document.querySelectorAll('[style*="pointer-events"]');
       elements.forEach(el => {
         if (el instanceof HTMLElement) {
-          el.style.pointerEvents = '';
+          el.style.removeProperty('pointer-events');
         }
       });
-    }, 0);
-    
-    onClose();
+    }, 100);
   };
 
   const isValidDomain = (domain: string) => {
