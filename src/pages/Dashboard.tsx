@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { Checkbox } from '@/components/ui/checkbox';
 import Header from '@/components/Header';
 import DomainManagement from '@/components/dashboard/DomainManagement';
 import AddDomainModal from '@/components/dashboard/AddDomainModal';
 import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import UserSettingsModal from '@/components/user/UserSettingsModal';
-import { Plus, FileText, Globe, Shield, ShieldCheck, AlertCircle, Settings, Copy } from 'lucide-react';
+import { Plus, FileText, Globe, Shield, ShieldCheck, AlertCircle, Settings, ExternalLink, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -32,6 +33,7 @@ const Dashboard = () => {
   const [isUserSettingsOpen, setIsUserSettingsOpen] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
   const itemsPerPage = 10;
 
   const user = {
@@ -117,9 +119,30 @@ const Dashboard = () => {
     setSelectedDomain(null);
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success('Скопировано в буфер обмена');
+  const handleSelectDomain = (domainId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedDomains([...selectedDomains, domainId]);
+    } else {
+      setSelectedDomains(selectedDomains.filter(id => id !== domainId));
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedDomains(paginatedDomains.map(domain => domain.id));
+    } else {
+      setSelectedDomains([]);
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    setDomains(domains.filter(domain => !selectedDomains.includes(domain.id)));
+    setSelectedDomains([]);
+    toast.success(`Удалено ${selectedDomains.length} доменов`);
+  };
+
+  const openDomainInNewTab = (domainName: string) => {
+    window.open(`https://${domainName}`, '_blank');
   };
 
   const getStatusBadge = (status: string) => {
@@ -130,6 +153,9 @@ const Dashboard = () => {
       default: return <Badge variant="secondary">Неизвестно</Badge>;
     }
   };
+
+  const isAllSelected = paginatedDomains.length > 0 && paginatedDomains.every(domain => selectedDomains.includes(domain.id));
+  const isIndeterminate = selectedDomains.length > 0 && !isAllSelected;
 
   // If a domain is selected, show the domain management view
   if (selectedDomain) {
@@ -174,10 +200,22 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Панель управления</h1>
-          <Button onClick={() => setIsAddDomainOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Добавить домен
-          </Button>
+          <div className="flex items-center space-x-2">
+            {selectedDomains.length > 0 && (
+              <Button 
+                variant="destructive" 
+                onClick={handleDeleteSelected}
+                className="mr-2"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Удалить ({selectedDomains.length})
+              </Button>
+            )}
+            <Button onClick={() => setIsAddDomainOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Добавить домен
+            </Button>
+          </div>
         </div>
 
         {/* Domains Table */}
@@ -189,17 +227,32 @@ const Dashboard = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={isAllSelected}
+                      onCheckedChange={handleSelectAll}
+                      ref={(el) => {
+                        if (el) el.indeterminate = isIndeterminate;
+                      }}
+                    />
+                  </TableHead>
                   <TableHead>Домен</TableHead>
                   <TableHead>Статус</TableHead>
                   <TableHead>NS статус</TableHead>
                   <TableHead>SSL</TableHead>
                   <TableHead>Создан</TableHead>
-                  <TableHead>Действия</TableHead>
+                  <TableHead className="text-right">Действия</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginatedDomains.map((domain) => (
                   <TableRow key={domain.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedDomains.includes(domain.id)}
+                        onCheckedChange={(checked) => handleSelectDomain(domain.id, checked as boolean)}
+                      />
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <Globe className="h-4 w-4" />
@@ -230,7 +283,7 @@ const Dashboard = () => {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center justify-end space-x-2">
                         <Button 
                           size="sm"
                           onClick={() => handleManageDomain(domain)}
@@ -241,9 +294,9 @@ const Dashboard = () => {
                         <Button 
                           size="sm" 
                           variant="ghost"
-                          onClick={() => copyToClipboard(domain.name)}
+                          onClick={() => openDomainInNewTab(domain.name)}
                         >
-                          <Copy className="h-4 w-4" />
+                          <ExternalLink className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>

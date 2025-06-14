@@ -34,7 +34,7 @@ const Header = ({ user, onLogout, onSettingsClick, onSubscriptionClick }: Header
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <Crown className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold">CloudDNS</span>
+            <span className="text-xl font-bold">DNSKing</span>
           </div>
         </div>
 
