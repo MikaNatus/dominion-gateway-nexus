@@ -1,16 +1,18 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import Header from '@/components/Header';
 import DomainManagement from '@/components/dashboard/DomainManagement';
-import DomainCard from '@/components/dashboard/DomainCard';
 import AddDomainModal from '@/components/dashboard/AddDomainModal';
 import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import UserSettingsModal from '@/components/user/UserSettingsModal';
-import { Plus, FileText } from 'lucide-react';
+import { Plus, FileText, Globe, Shield, ShieldCheck, AlertCircle, Settings, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface Domain {
   id: string;
@@ -29,6 +31,8 @@ const Dashboard = () => {
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [isUserSettingsOpen, setIsUserSettingsOpen] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const user = {
     name: 'John Doe',
@@ -69,6 +73,15 @@ const Dashboard = () => {
     },
   ]);
 
+  // Pagination logic
+  const paginatedDomains = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return domains.slice(startIndex, endIndex);
+  }, [domains, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(domains.length / itemsPerPage);
+
   const handleAddDomain = (domainName: string) => {
     const newDomain: Domain = {
       id: String(domains.length + 1),
@@ -102,6 +115,20 @@ const Dashboard = () => {
 
   const handleBackToDomains = () => {
     setSelectedDomain(null);
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Скопировано в буфер обмена');
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'active': return <Badge className="bg-green-100 text-green-800">Активен</Badge>;
+      case 'pending': return <Badge className="bg-yellow-100 text-yellow-800">Ожидание</Badge>;
+      case 'error': return <Badge className="bg-red-100 text-red-800">Ошибка</Badge>;
+      default: return <Badge variant="secondary">Неизвестно</Badge>;
+    }
   };
 
   // If a domain is selected, show the domain management view
@@ -153,16 +180,125 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {/* Domain Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {domains.map((domain) => (
-            <DomainCard
-              key={domain.id}
-              domain={domain}
-              onManage={handleManageDomain}
-            />
-          ))}
-        </div>
+        {/* Domains Table */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Мои домены</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Домен</TableHead>
+                  <TableHead>Статус</TableHead>
+                  <TableHead>NS статус</TableHead>
+                  <TableHead>SSL</TableHead>
+                  <TableHead>Создан</TableHead>
+                  <TableHead>Действия</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedDomains.map((domain) => (
+                  <TableRow key={domain.id}>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Globe className="h-4 w-4" />
+                        <span className="font-medium">{domain.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(domain.status)}
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(domain.nsStatus)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        {domain.sslStatus === 'active' ? (
+                          <ShieldCheck className="h-4 w-4 text-green-600" />
+                        ) : domain.sslStatus === 'pending' ? (
+                          <Shield className="h-4 w-4 text-yellow-600" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-red-600" />
+                        )}
+                        <span className="text-sm">{domain.sslMode}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(domain.createdAt).toLocaleDateString('ru-RU')}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Button 
+                          size="sm"
+                          onClick={() => handleManageDomain(domain)}
+                        >
+                          <Settings className="h-4 w-4 mr-1" />
+                          Управление
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => copyToClipboard(domain.name)}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) setCurrentPage(currentPage - 1);
+                        }}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                      />
+                    </PaginationItem>
+                    
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(page);
+                          }}
+                          isActive={currentPage === page}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                        }}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         <Card className="mt-8">
           <CardHeader>
