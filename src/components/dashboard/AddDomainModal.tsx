@@ -27,14 +27,18 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
     if (!domain.trim()) return;
 
     setIsLoading(true);
-    await onAdd(domain.trim());
-    setIsLoading(false);
-    setDomain('');
-    onClose();
+    try {
+      await onAdd(domain.trim());
+      setDomain('');
+      onClose();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleClose = () => {
     setDomain('');
+    setIsLoading(false);
     onClose();
   };
 
