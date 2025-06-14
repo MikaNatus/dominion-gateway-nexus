@@ -19,7 +19,7 @@ interface Domain {
   name: string;
   status: 'active' | 'pending' | 'error';
   nsStatus: 'connected' | 'pending' | 'error';
-  sslMode: 'flexible' | 'full' | 'strict';
+  sslMode: 'proxy' | 'direct';
   sslStatus: 'active' | 'pending' | 'error';
   nsServers: string[];
   createdAt: string;
