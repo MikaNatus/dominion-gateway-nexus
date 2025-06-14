@@ -1,11 +1,12 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import DomainManagement from '@/components/dashboard/DomainManagement';
+import UserSettingsModal from '@/components/user/UserSettingsModal';
+import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Globe, Shield, Server, Plus, Trash2 } from 'lucide-react';
+import { Globe, Shield, Server, Plus, Trash2, Crown } from 'lucide-react';
 import AddDomainModal from '@/components/dashboard/AddDomainModal';
 import { 
   Pagination, 
@@ -74,9 +75,13 @@ const Dashboard = () => {
   const startIndex = (currentPage - 1) * domainsPerPage;
   const paginatedDomains = domains.slice(startIndex, startIndex + domainsPerPage);
 
+  const [showUserSettings, setShowUserSettings] = useState(false);
+  const [showSubscription, setShowSubscription] = useState(false);
+
   const user = {
     email: 'user@example.com',
-    name: 'Пользователь'
+    name: 'Пользователь',
+    plan: 'free' as const // Можно изменить на 'premium' для тестирования
   };
 
   const handleLogout = () => {
@@ -84,7 +89,11 @@ const Dashboard = () => {
   };
 
   const handleSettingsClick = () => {
-    console.log('Настройки аккаунта');
+    setShowUserSettings(true);
+  };
+
+  const handleSubscriptionClick = () => {
+    setShowSubscription(true);
   };
 
   const handleAddDomain = (domainName: string) => {
@@ -131,12 +140,16 @@ const Dashboard = () => {
     pendingDomains: domains.filter(d => d.status === 'pending').length
   };
 
+  // Проверка лимитов для бесплатного плана
+  const canAddDomain = user.plan === 'premium' || domains.length < 1;
+
   return (
     <div className="min-h-screen bg-background">
       <Header 
         user={user} 
         onLogout={handleLogout} 
-        onSettingsClick={handleSettingsClick} 
+        onSettingsClick={handleSettingsClick}
+        onSubscriptionClick={handleSubscriptionClick}
       />
       
       <main className="container mx-auto px-4 sm:px-6 py-8">
@@ -158,22 +171,61 @@ const Dashboard = () => {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
+                {user.plan === 'free' && (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowSubscription(true)}
+                    className="order-3 sm:order-1"
+                  >
+                    <Crown className="h-4 w-4 mr-2" />
+                    Премиум план
+                  </Button>
+                )}
                 <Button 
                   variant="outline" 
                   onClick={() => window.location.href = '/api-docs'}
-                  className="order-2 sm:order-1"
+                  className="order-2 sm:order-2"
                 >
                   📡 API Docs
                 </Button>
                 <Button 
-                  onClick={() => setShowAddModal(true)}
-                  className="order-1 sm:order-2"
+                  onClick={() => canAddDomain ? setShowAddModal(true) : setShowSubscription(true)}
+                  className="order-1 sm:order-3"
+                  disabled={!canAddDomain && user.plan === 'free'}
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Добавить домен
+                  {canAddDomain ? 'Добавить домен' : 'Лимит доменов (Премиум)'}
                 </Button>
               </div>
             </div>
+
+            {/* Plan limit warning for free users */}
+            {user.plan === 'free' && domains.length >= 1 && (
+              <Card className="mb-6 border-yellow-200 bg-yellow-50">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Crown className="h-5 w-5 text-yellow-600" />
+                      <div>
+                        <p className="font-medium text-yellow-800">
+                          Достигнут лимит бесплатного плана
+                        </p>
+                        <p className="text-sm text-yellow-700">
+                          Перейдите на Премиум план для добавления неограниченного количества доменов
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      onClick={() => setShowSubscription(true)}
+                      className="bg-yellow-600 hover:bg-yellow-700"
+                    >
+                      Перейти на Премиум
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
@@ -354,6 +406,18 @@ const Dashboard = () => {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddDomain}
+      />
+
+      <UserSettingsModal
+        isOpen={showUserSettings}
+        onClose={() => setShowUserSettings(false)}
+        user={user}
+      />
+
+      <SubscriptionModal
+        isOpen={showSubscription}
+        onClose={() => setShowSubscription(false)}
+        currentPlan={user.plan}
       />
     </div>
   );
