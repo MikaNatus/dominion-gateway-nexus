@@ -81,7 +81,7 @@ const Dashboard = () => {
   const user = {
     email: 'user@example.com',
     name: 'Пользователь',
-    plan: 'free' as const // Можно изменить на 'premium' для тестирования
+    plan: 'free' as 'free' | 'premium' // Исправлена типизация
   };
 
   const handleLogout = () => {
@@ -140,8 +140,8 @@ const Dashboard = () => {
     pendingDomains: domains.filter(d => d.status === 'pending').length
   };
 
-  // Проверка лимитов для бесплатного плана
-  const canAddDomain = user.plan === 'premium' || domains.length < 1;
+  // Проверка лимитов для бесплатного плана - убрана блокировка кнопки
+  const showLimitWarning = user.plan === 'free' && domains.length >= 1;
 
   return (
     <div className="min-h-screen bg-background">
@@ -189,18 +189,17 @@ const Dashboard = () => {
                   📡 API Docs
                 </Button>
                 <Button 
-                  onClick={() => canAddDomain ? setShowAddModal(true) : setShowSubscription(true)}
+                  onClick={() => setShowAddModal(true)}
                   className="order-1 sm:order-3"
-                  disabled={!canAddDomain && user.plan === 'free'}
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  {canAddDomain ? 'Добавить домен' : 'Лимит доменов (Премиум)'}
+                  Добавить домен
                 </Button>
               </div>
             </div>
 
             {/* Plan limit warning for free users */}
-            {user.plan === 'free' && domains.length >= 1 && (
+            {showLimitWarning && (
               <Card className="mb-6 border-yellow-200 bg-yellow-50">
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">

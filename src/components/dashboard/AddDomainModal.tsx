@@ -44,16 +44,16 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <Plus className="h-5 w-5" />
-            <span>Add New Domain</span>
+            <span>Добавить новый домен</span>
           </DialogTitle>
           <DialogDescription>
-            Enter your domain name to add it to your DNS management
+            Введите имя домена для добавления в систему управления DNS
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="domain">Domain Name</Label>
+            <Label htmlFor="domain">Имя домена</Label>
             <div className="relative">
               <Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
@@ -67,7 +67,7 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
               />
             </div>
             {domain && !isValidDomain(domain) && (
-              <p className="text-sm text-destructive">Please enter a valid domain name</p>
+              <p className="text-sm text-destructive">Пожалуйста, введите корректное имя домена</p>
             )}
           </div>
           
@@ -78,14 +78,14 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
               onClick={onClose}
               className="flex-1"
             >
-              Cancel
+              Отмена
             </Button>
             <Button
               type="submit"
               disabled={isLoading || !domain || !isValidDomain(domain)}
               className="flex-1"
             >
-              {isLoading ? 'Adding...' : 'Add Domain'}
+              {isLoading ? 'Добавление...' : 'Добавить домен'}
             </Button>
           </div>
         </form>
