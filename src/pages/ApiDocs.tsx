@@ -20,6 +20,10 @@ interface ApiEndpoint {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   url: string;
   description: string;
+  requestBody?: object;
+  successResponse?: object;
+  errorResponse?: object;
+  availableValues?: string[];
 }
 
 const ApiDocs = () => {
@@ -31,34 +35,183 @@ const ApiDocs = () => {
   };
 
   const dnsEndpoints: ApiEndpoint[] = [
-    { method: 'GET', url: '/api/domains/:id/records', description: 'Все записи' },
-    { method: 'POST', url: '/api/domains/:id/records', description: 'Добавить запись' },
-    { method: 'PUT', url: '/api/records/:recordId', description: 'Обновить запись' },
-    { method: 'DELETE', url: '/api/records/:recordId', description: 'Удалить запись' }
+    { 
+      method: 'GET', 
+      url: '/api/domains/:id/records', 
+      description: 'Получить все DNS записи домена',
+      successResponse: {
+        "records": [
+          {
+            "id": "rec_123",
+            "name": "@",
+            "type": "A",
+            "content": "213.209.129.114",
+            "ttl": 3600
+          }
+        ]
+      },
+      errorResponse: {
+        "error": "Domain not found",
+        "code": 404
+      }
+    },
+    { 
+      method: 'POST', 
+      url: '/api/domains/:id/records', 
+      description: 'Добавить новую DNS запись',
+      requestBody: {
+        "name": "@",
+        "type": "A", 
+        "content": "213.209.129.114",
+        "ttl": 3600
+      },
+      successResponse: {
+        "id": "rec_124",
+        "name": "@",
+        "type": "A",
+        "content": "213.209.129.114",
+        "ttl": 3600,
+        "created_at": "2024-01-15T10:30:00Z"
+      },
+      errorResponse: {
+        "error": "Invalid record type",
+        "code": 400
+      }
+    },
+    { 
+      method: 'PUT', 
+      url: '/api/records/:recordId', 
+      description: 'Обновить существующую DNS запись',
+      requestBody: {
+        "name": "@",
+        "type": "A",
+        "content": "213.209.129.114", 
+        "ttl": 3600
+      },
+      successResponse: {
+        "id": "rec_123",
+        "name": "@",
+        "type": "A",
+        "content": "213.209.129.114",
+        "ttl": 3600,
+        "updated_at": "2024-01-15T10:35:00Z"
+      },
+      errorResponse: {
+        "error": "Record not found",
+        "code": 404
+      }
+    },
+    { 
+      method: 'DELETE', 
+      url: '/api/records/:recordId', 
+      description: 'Удалить DNS запись',
+      successResponse: {
+        "message": "Record deleted successfully"
+      },
+      errorResponse: {
+        "error": "Record not found",
+        "code": 404
+      }
+    }
   ];
 
   const nsEndpoints: ApiEndpoint[] = [
-    { method: 'GET', url: '/api/domains/:id/status', description: 'Проверить подключение NS-записей' },
-    { method: 'GET', url: '/api/domains/:id/ns', description: 'Получить NS-записи этого домена' }
+    { 
+      method: 'GET', 
+      url: '/api/domains/:id/status', 
+      description: 'Проверить статус подключения NS-записей',
+      successResponse: {
+        "status": "connected",
+        "ns_servers": [
+          "ns1.clouddns.ru",
+          "ns2.clouddns.ru"
+        ],
+        "last_check": "2024-01-15T10:30:00Z"
+      },
+      errorResponse: {
+        "status": "not_connected",
+        "error": "NS servers not pointing to CloudDNS"
+      }
+    },
+    { 
+      method: 'GET', 
+      url: '/api/domains/:id/ns', 
+      description: 'Получить NS-записи домена',
+      successResponse: {
+        "ns_servers": [
+          "ns1.clouddns.ru",
+          "ns2.clouddns.ru"
+        ]
+      }
+    }
   ];
 
   const modeEndpoints: ApiEndpoint[] = [
-    { method: 'GET', url: '/api/domains/:id/mode', description: 'Получить текущий режим' },
-    { method: 'POST', url: '/api/domains/:id/mode', description: 'Изменить режим (direct, proxy)' }
+    { 
+      method: 'GET', 
+      url: '/api/domains/:id/mode', 
+      description: 'Получить текущий режим домена',
+      successResponse: {
+        "mode": "proxy",
+        "description": "Проксирование через CloudDNS"
+      }
+    },
+    { 
+      method: 'POST', 
+      url: '/api/domains/:id/mode', 
+      description: 'Изменить режим домена',
+      requestBody: {
+        "mode": "proxy"
+      },
+      availableValues: ["proxy", "direct"],
+      successResponse: {
+        "mode": "proxy",
+        "message": "Mode updated successfully"
+      },
+      errorResponse: {
+        "error": "Invalid mode value",
+        "code": 400,
+        "available_modes": ["proxy", "direct"]
+      }
+    }
   ];
 
   const sslEndpoints: ApiEndpoint[] = [
-    { method: 'GET', url: '/api/domains/:id/ssl', description: 'Статус SSL (от Traefik)' },
-    { method: 'POST', url: '/api/domains/:id/ssl/renew', description: 'Перезапустить выдачу (опционально)' }
+    { 
+      method: 'GET', 
+      url: '/api/domains/:id/ssl', 
+      description: 'Получить статус SSL сертификата',
+      successResponse: {
+        "status": "active",
+        "certificate": {
+          "issuer": "Let's Encrypt",
+          "expires_at": "2024-04-15T00:00:00Z",
+          "domains": ["example.com", "www.example.com"]
+        }
+      }
+    },
+    { 
+      method: 'POST', 
+      url: '/api/domains/:id/ssl/renew', 
+      description: 'Перевыпустить SSL сертификат',
+      successResponse: {
+        "message": "SSL renewal initiated",
+        "status": "processing"
+      },
+      errorResponse: {
+        "error": "Domain not verified",
+        "code": 400
+      }
+    }
   ];
 
   const getMethodColor = (method: string) => {
     switch (method) {
-      case 'GET': return 'bg-green-100 text-green-800';
-      case 'POST': return 'bg-blue-100 text-blue-800';
-      case 'PUT': return 'bg-yellow-100 text-yellow-800';
-      case 'DELETE': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'GET': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'POST': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+      case 'PUT': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      case 'DELETE': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
     }
   };
 
@@ -67,16 +220,10 @@ const ApiDocs = () => {
     title: string, 
     icon: React.ComponentType<{ className?: string }> 
   }) => (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2 text-lg">
-          <Icon className="h-5 w-5" />
-          <span>{title}</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {endpoints.map((endpoint, index) => (
-          <div key={index} className="border rounded-lg p-3 space-y-2">
+    <div className="space-y-6">
+      {endpoints.map((endpoint, index) => (
+        <Card key={index}>
+          <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center space-x-2">
                 <Badge className={getMethodColor(endpoint.method)}>
@@ -98,10 +245,89 @@ const ApiDocs = () => {
             <p className="text-sm text-muted-foreground">
               {endpoint.description}
             </p>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
+            {endpoint.requestBody && (
+              <div>
+                <h4 className="font-medium mb-2">Тело запроса:</h4>
+                <div className="bg-muted rounded p-3">
+                  <pre className="text-sm overflow-x-auto">
+                    {JSON.stringify(endpoint.requestBody, null, 2)}
+                  </pre>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => copyToClipboard(JSON.stringify(endpoint.requestBody, null, 2))}
+                >
+                  <Copy className="h-3 w-3 mr-1" />
+                  Копировать
+                </Button>
+              </div>
+            )}
+
+            {endpoint.availableValues && (
+              <div>
+                <h4 className="font-medium mb-2">Доступные значения:</h4>
+                <div className="flex flex-wrap gap-2">
+                  {endpoint.availableValues.map((value) => (
+                    <Badge key={value} variant="outline">
+                      {value}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="mt-2 text-sm text-muted-foreground">
+                  <p><strong>proxy</strong> - Проксирование через CloudDNS с использованием нашего SSL сертификата</p>
+                  <p><strong>direct</strong> - Прямое подключение с вашим SSL сертификатом на стороне сервера</p>
+                </div>
+              </div>
+            )}
+
+            {endpoint.successResponse && (
+              <div>
+                <h4 className="font-medium mb-2 text-green-600 dark:text-green-400">Успешный ответ (200):</h4>
+                <div className="bg-muted rounded p-3">
+                  <pre className="text-sm overflow-x-auto">
+                    {JSON.stringify(endpoint.successResponse, null, 2)}
+                  </pre>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => copyToClipboard(JSON.stringify(endpoint.successResponse, null, 2))}
+                >
+                  <Copy className="h-3 w-3 mr-1" />
+                  Копировать
+                </Button>
+              </div>
+            )}
+
+            {endpoint.errorResponse && (
+              <div>
+                <h4 className="font-medium mb-2 text-red-600 dark:text-red-400">Ответ при ошибке:</h4>
+                <div className="bg-muted rounded p-3">
+                  <pre className="text-sm overflow-x-auto">
+                    {JSON.stringify(endpoint.errorResponse, null, 2)}
+                  </pre>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => copyToClipboard(JSON.stringify(endpoint.errorResponse, null, 2))}
+                >
+                  <Copy className="h-3 w-3 mr-1" />
+                  Копировать
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 
   return (
@@ -116,7 +342,7 @@ const ApiDocs = () => {
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold">API Документация</h1>
               <p className="text-muted-foreground mt-1">
-                Справочник по REST API для управления доменами
+                Подробный справочник по REST API для управления доменами
               </p>
             </div>
           </div>
@@ -267,6 +493,32 @@ const ApiDocs = () => {
               <p className="text-sm text-muted-foreground">
                 Все ответы возвращаются в формате JSON с соответствующими HTTP статус кодами.
               </p>
+            </div>
+
+            <div>
+              <h4 className="font-medium mb-2">Коды ошибок</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <code>200</code>
+                  <span className="text-muted-foreground">Успешный запрос</span>
+                </div>
+                <div className="flex justify-between">
+                  <code>400</code>
+                  <span className="text-muted-foreground">Некорректный запрос</span>
+                </div>
+                <div className="flex justify-between">
+                  <code>401</code>
+                  <span className="text-muted-foreground">Неавторизован</span>
+                </div>
+                <div className="flex justify-between">
+                  <code>404</code>
+                  <span className="text-muted-foreground">Ресурс не найден</span>
+                </div>
+                <div className="flex justify-between">
+                  <code>500</code>
+                  <span className="text-muted-foreground">Внутренняя ошибка сервера</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

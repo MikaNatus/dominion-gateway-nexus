@@ -1,427 +1,143 @@
 import React, { useState } from 'react';
-import Header from '@/components/Header';
-import DomainManagement from '@/components/dashboard/DomainManagement';
-import UserSettingsModal from '@/components/user/UserSettingsModal';
-import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Globe, Shield, Server, Plus, Trash2, Crown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import Header from '@/components/Header';
+import DomainManagement from '@/components/dashboard/DomainManagement';
 import AddDomainModal from '@/components/dashboard/AddDomainModal';
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
-} from '@/components/ui/pagination';
-import { toast } from 'sonner';
+import SubscriptionModal from '@/components/subscription/SubscriptionModal';
+import UserSettingsModal from '@/components/user/UserSettingsModal';
+import { Plus, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface Domain {
   id: string;
   name: string;
   status: 'active' | 'pending' | 'error';
-  nsStatus: 'connected' | 'pending' | 'error';
-  sslMode: 'flexible' | 'full' | 'strict';
-  sslStatus: 'active' | 'pending' | 'error';
-  nsServers: string[];
-  createdAt: string;
+  sslMode: 'proxy' | 'direct';
+  records: number;
+  lastUpdated: string;
 }
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [isAddDomainOpen, setIsAddDomainOpen] = useState(false);
+  const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
+  const [isUserSettingsOpen, setIsUserSettingsOpen] = useState(false);
+
+  const user = {
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    plan: 'premium' as 'free' | 'premium',
+  };
+
   const [domains, setDomains] = useState<Domain[]>([
     {
       id: '1',
       name: 'example.com',
       status: 'active',
-      nsStatus: 'connected',
-      sslMode: 'full',
-      sslStatus: 'active',
-      nsServers: ['ns1.clouddns.ru', 'ns2.clouddns.ru'],
-      createdAt: '2024-01-15'
+      sslMode: 'proxy',
+      records: 5,
+      lastUpdated: '2024-01-14 14:30',
     },
     {
       id: '2',
-      name: 'test-site.org',
+      name: 'test.com',
       status: 'pending',
-      nsStatus: 'pending',
-      sslMode: 'flexible',
-      sslStatus: 'pending',
-      nsServers: ['ns1.clouddns.ru', 'ns2.clouddns.ru'],
-      createdAt: '2024-01-20'
+      sslMode: 'direct',
+      records: 2,
+      lastUpdated: '2024-01-13 18:00',
     },
-    // ... more domains for pagination demo
     {
       id: '3',
-      name: 'demo-site.net',
-      status: 'active',
-      nsStatus: 'connected',
-      sslMode: 'full',
-      sslStatus: 'active',
-      nsServers: ['ns1.clouddns.ru', 'ns2.clouddns.ru'],
-      createdAt: '2024-01-25'
-    }
+      name: 'demo.net',
+      status: 'error',
+      sslMode: 'direct',
+      records: 10,
+      lastUpdated: '2024-01-12 09:45',
+    },
   ]);
-  
-  const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedDomainIds, setSelectedDomainIds] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const domainsPerPage = 5;
-
-  // Pagination logic
-  const totalPages = Math.ceil(domains.length / domainsPerPage);
-  const startIndex = (currentPage - 1) * domainsPerPage;
-  const paginatedDomains = domains.slice(startIndex, startIndex + domainsPerPage);
-
-  const [showUserSettings, setShowUserSettings] = useState(false);
-  const [showSubscription, setShowSubscription] = useState(false);
-
-  const user = {
-    email: 'user@example.com',
-    name: 'Пользователь',
-    plan: 'free' as 'free' | 'premium' // Исправлена типизация
-  };
-
-  const handleLogout = () => {
-    console.log('Выход из системы');
-  };
-
-  const handleSettingsClick = () => {
-    setShowUserSettings(true);
-  };
-
-  const handleSubscriptionClick = () => {
-    setShowSubscription(true);
-  };
 
   const handleAddDomain = (domainName: string) => {
     const newDomain: Domain = {
-      id: Date.now().toString(),
+      id: String(domains.length + 1),
       name: domainName,
       status: 'pending',
-      nsStatus: 'pending',
-      sslMode: 'flexible',
-      sslStatus: 'pending',
-      nsServers: ['ns1.clouddns.ru', 'ns2.clouddns.ru'],
-      createdAt: new Date().toISOString().split('T')[0]
+      sslMode: 'direct',
+      records: 0,
+      lastUpdated: 'Just now',
     };
     setDomains([...domains, newDomain]);
-    setShowAddModal(false);
+    setIsAddDomainOpen(false);
   };
 
-  const handleSelectDomain = (domainId: string, isSelected: boolean) => {
-    if (isSelected) {
-      setSelectedDomainIds([...selectedDomainIds, domainId]);
-    } else {
-      setSelectedDomainIds(selectedDomainIds.filter(id => id !== domainId));
-    }
+  const handleLogout = () => {
+    navigate('/login');
   };
 
-  const handleSelectAll = (isSelected: boolean) => {
-    if (isSelected) {
-      setSelectedDomainIds(paginatedDomains.map(domain => domain.id));
-    } else {
-      setSelectedDomainIds([]);
-    }
+  const handleSettingsClick = () => {
+    setIsUserSettingsOpen(true);
   };
 
-  const handleDeleteSelected = () => {
-    setDomains(domains.filter(domain => !selectedDomainIds.includes(domain.id)));
-    setSelectedDomainIds([]);
-    toast.success(`Удалено доменов: ${selectedDomainIds.length}`);
+  const handleSubscriptionClick = () => {
+    setIsSubscriptionOpen(true);
   };
-
-  const handleUpgrade = () => {
-    // Перенаправляем на страницу оплаты
-    window.location.href = '/payment';
-  };
-
-  const stats = {
-    totalDomains: domains.length,
-    activeDomains: domains.filter(d => d.status === 'active').length,
-    sslCertificates: domains.filter(d => d.sslStatus === 'active').length,
-    pendingDomains: domains.filter(d => d.status === 'pending').length
-  };
-
-  // Проверка лимитов для бесплатного плана - убрана блокировка кнопки
-  const showLimitWarning = user.plan === 'free' && domains.length >= 1;
 
   return (
     <div className="min-h-screen bg-background">
-      <Header 
-        user={user} 
-        onLogout={handleLogout} 
+      <Header
+        user={user}
+        onLogout={handleLogout}
         onSettingsClick={handleSettingsClick}
         onSubscriptionClick={handleSubscriptionClick}
       />
-      
-      <main className="container mx-auto px-4 sm:px-6 py-8">
-        {selectedDomain ? (
-          <div>
-            <DomainManagement 
-              domain={selectedDomain} 
-              onBack={() => setSelectedDomain(null)} 
-            />
-          </div>
-        ) : (
-          <div>
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold mb-2">Панель управления</h1>
-                <p className="text-muted-foreground">
-                  Управляйте своими доменами и SSL сертификатами
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                {user.plan === 'free' && (
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowSubscription(true)}
-                    className="order-3 sm:order-1"
-                  >
-                    <Crown className="h-4 w-4 mr-2" />
-                    Премиум план
-                  </Button>
-                )}
-                <Button 
-                  variant="outline" 
-                  onClick={() => window.location.href = '/api-docs'}
-                  className="order-2 sm:order-2"
-                >
-                  📡 API Docs
-                </Button>
-                <Button 
-                  onClick={() => setShowAddModal(true)}
-                  className="order-1 sm:order-3"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Добавить домен
-                </Button>
-              </div>
+      <main className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">Панель управления</h1>
+          <Button onClick={() => setIsAddDomainOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Добавить домен
+          </Button>
+        </div>
+
+        <DomainManagement domains={domains} />
+
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>Что дальше?</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Ознакомьтесь с API или добавьте свой первый домен.
+            </p>
+            <div className="mt-4 flex space-x-4">
+              <Button variant="outline" onClick={() => navigate('/api-docs')}>
+                <FileText className="w-4 h-4 mr-2" />
+                API Документация
+              </Button>
+              <Button onClick={() => setIsAddDomainOpen(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Добавить домен
+              </Button>
             </div>
-
-            {/* Plan limit warning for free users */}
-            {showLimitWarning && (
-              <Card className="mb-6 border-yellow-200 bg-yellow-50">
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Crown className="h-5 w-5 text-yellow-600" />
-                      <div>
-                        <p className="font-medium text-yellow-800">
-                          Достигнут лимит бесплатного плана
-                        </p>
-                        <p className="text-sm text-yellow-700">
-                          Перейдите на Премиум план для добавления неограниченного количества доменов
-                        </p>
-                      </div>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      onClick={() => setShowSubscription(true)}
-                      className="bg-yellow-600 hover:bg-yellow-700"
-                    >
-                      Перейти на Премиум
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Всего доменов</CardTitle>
-                  <Globe className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalDomains}</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Активные домены</CardTitle>
-                  <Server className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-green-600">{stats.activeDomains}</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">SSL сертификаты</CardTitle>
-                  <Shield className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">{stats.sslCertificates}</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">В ожидании</CardTitle>
-                  <Globe className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-yellow-600">{stats.pendingDomains}</div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Domains List */}
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <CardTitle>Мои домены</CardTitle>
-                  {selectedDomainIds.length > 0 && (
-                    <Button 
-                      variant="destructive" 
-                      size="sm"
-                      onClick={handleDeleteSelected}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Удалить ({selectedDomainIds.length})
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                {domains.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Globe className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Нет доменов</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Добавьте свой первый домен для управления DNS и SSL
-                    </p>
-                    <Button onClick={() => setShowAddModal(true)}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Добавить домен
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Select All */}
-                    <div className="flex items-center space-x-2 pb-2 border-b">
-                      <Checkbox
-                        checked={selectedDomainIds.length === paginatedDomains.length && paginatedDomains.length > 0}
-                        onCheckedChange={handleSelectAll}
-                      />
-                      <label className="text-sm font-medium">
-                        Выбрать все на странице
-                      </label>
-                    </div>
-
-                    {/* Domain List */}
-                    {paginatedDomains.map((domain) => (
-                      <div 
-                        key={domain.id}
-                        className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border rounded-lg hover:bg-muted/50"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <Checkbox
-                            checked={selectedDomainIds.includes(domain.id)}
-                            onCheckedChange={(checked) => handleSelectDomain(domain.id, checked as boolean)}
-                          />
-                          <Globe className="h-5 w-5 text-muted-foreground shrink-0" />
-                          <div className="min-w-0">
-                            <h3 className="font-semibold truncate">{domain.name}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              Добавлен: {domain.createdAt}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:ml-auto gap-2 sm:space-x-4">
-                          <div className="flex flex-wrap gap-2">
-                            <div className={`inline-block px-2 py-1 text-xs rounded-full ${
-                              domain.status === 'active' ? 'bg-green-100 text-green-800' :
-                              domain.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-red-100 text-red-800'
-                            }`}>
-                              {domain.status === 'active' ? 'Активен' :
-                               domain.status === 'pending' ? 'Ожидание' : 'Ошибка'}
-                            </div>
-                            <div className={`inline-block px-2 py-1 text-xs rounded-full ${
-                              domain.sslStatus === 'active' ? 'bg-blue-100 text-blue-800' :
-                              domain.sslStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-red-100 text-red-800'
-                            }`}>
-                              SSL: {domain.sslStatus === 'active' ? 'Активен' :
-                                   domain.sslStatus === 'pending' ? 'Ожидание' : 'Ошибка'}
-                            </div>
-                          </div>
-                          <Button 
-                            size="sm"
-                            onClick={() => setSelectedDomain(domain)}
-                          >
-                            Управление
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                      <div className="flex justify-center mt-6">
-                        <Pagination>
-                          <PaginationContent>
-                            <PaginationItem>
-                              <PaginationPrevious 
-                                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                                className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                              />
-                            </PaginationItem>
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                              <PaginationItem key={page}>
-                                <PaginationLink
-                                  onClick={() => setCurrentPage(page)}
-                                  isActive={currentPage === page}
-                                  className="cursor-pointer"
-                                >
-                                  {page}
-                                </PaginationLink>
-                              </PaginationItem>
-                            ))}
-                            <PaginationItem>
-                              <PaginationNext 
-                                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                                className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                              />
-                            </PaginationItem>
-                          </PaginationContent>
-                        </Pagination>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
+          </CardContent>
+        </Card>
       </main>
 
       <AddDomainModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onAdd={handleAddDomain}
-      />
-
-      <UserSettingsModal
-        isOpen={showUserSettings}
-        onClose={() => setShowUserSettings(false)}
-        user={user}
+        isOpen={isAddDomainOpen}
+        onClose={() => setIsAddDomainOpen(false)}
+        onAddDomain={handleAddDomain}
       />
 
       <SubscriptionModal
-        isOpen={showSubscription}
-        onClose={() => setShowSubscription(false)}
-        currentPlan={user.plan}
+        isOpen={isSubscriptionOpen}
+        onClose={() => setIsSubscriptionOpen(false)}
+      />
+
+      <UserSettingsModal
+        isOpen={isUserSettingsOpen}
+        onClose={() => setIsUserSettingsOpen(false)}
       />
     </div>
   );
