@@ -39,6 +39,18 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
   const handleClose = () => {
     setDomain('');
     setIsLoading(false);
+    
+    // Принудительно убираем pointer-events: none
+    setTimeout(() => {
+      document.body.style.pointerEvents = '';
+      const elements = document.querySelectorAll('[style*="pointer-events"]');
+      elements.forEach(el => {
+        if (el instanceof HTMLElement) {
+          el.style.pointerEvents = '';
+        }
+      });
+    }, 0);
+    
     onClose();
   };
 
