@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
@@ -51,10 +52,10 @@ const NativeDialog = ({ open, onOpenChange, children, className }: NativeDialogP
       onClick={handleDialogClick}
       onClose={handleClose}
     >
-      <div className="flex items-center justify-center min-h-full p-2 sm:p-4 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-full p-2 sm:p-4 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border hover:scrollbar-thumb-muted-foreground">
         <div 
           className={cn(
-            "relative bg-background border rounded-lg shadow-lg p-3 sm:p-6 my-4 max-h-[calc(100vh-2rem)] overflow-y-auto",
+            "relative bg-background border rounded-lg shadow-lg p-3 sm:p-6 my-4 max-h-[calc(100vh-2rem)] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border hover:scrollbar-thumb-muted-foreground",
             "transition-none",
             className
           )}
