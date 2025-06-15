@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -16,32 +16,8 @@ interface SubscriptionModalProps {
 }
 
 const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalProps) => {
-  useEffect(() => {
-    // Очистка стилей при размонтировании компонента
-    return () => {
-      document.body.style.removeProperty('pointer-events');
-      document.body.style.removeProperty('overflow');
-    };
-  }, []);
-
-  useEffect(() => {
-    // Очистка стилей когда модалка закрывается
-    if (!isOpen) {
-      // Добавляем небольшую задержку для корректного закрытия анимации
-      const timer = setTimeout(() => {
-        document.body.style.removeProperty('pointer-events');
-        document.body.style.removeProperty('overflow');
-      }, 100);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
-
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      // Сразу очищаем стили при закрытии
-      document.body.style.removeProperty('pointer-events');
-      document.body.style.removeProperty('overflow');
       onClose();
     }
   };

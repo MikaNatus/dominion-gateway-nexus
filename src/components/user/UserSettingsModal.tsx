@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -57,35 +58,6 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
     }
   });
 
-  useEffect(() => {
-    // Очистка стилей при размонтировании компонента
-    return () => {
-      document.body.style.removeProperty('pointer-events');
-      document.body.style.removeProperty('overflow');
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isOpen) {
-      // Принудительно очищаем состояние при закрытии
-      form.reset();
-      setShowApiKey(false);
-      setShowPasswords({
-        current: false,
-        new: false,
-        confirm: false
-      });
-      
-      // Очистка стилей с небольшой задержкой
-      const timer = setTimeout(() => {
-        document.body.style.removeProperty('pointer-events');
-        document.body.style.removeProperty('overflow');
-      }, 100);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen, form]);
-
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       form.reset();
@@ -95,23 +67,8 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
         new: false,
         confirm: false
       });
-      
-      // Сразу очищаем стили при закрытии
-      document.body.style.removeProperty('pointer-events');
-      document.body.style.removeProperty('overflow');
       onClose();
     }
-  };
-
-  const handleClose = () => {
-    form.reset();
-    setShowApiKey(false);
-    setShowPasswords({
-      current: false,
-      new: false,
-      confirm: false
-    });
-    onClose();
   };
 
   const handleCopyApiKey = async () => {
