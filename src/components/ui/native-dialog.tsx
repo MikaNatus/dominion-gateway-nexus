@@ -52,14 +52,18 @@ const NativeDialog = ({ open, onOpenChange, children, className }: NativeDialogP
       onClick={handleDialogClick}
       onClose={handleClose}
     >
-      <div className="fixed inset-0 flex items-center justify-center p-4 overflow-hidden">
+      <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-4 overflow-hidden">
         <div 
-          className="relative bg-background border rounded-lg shadow-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto"
+          className={cn(
+            "relative bg-background border rounded-lg shadow-lg p-3 sm:p-6 w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto",
+            "max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl",
+            className
+          )}
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={handleClose}
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            className="absolute right-2 top-2 sm:right-4 sm:top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 z-10"
           >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
@@ -72,19 +76,19 @@ const NativeDialog = ({ open, onOpenChange, children, className }: NativeDialogP
 };
 
 const NativeDialogContent = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-  return <div className={cn("space-y-4", className)}>{children}</div>;
+  return <div className={cn("space-y-3 sm:space-y-4", className)}>{children}</div>;
 };
 
 const NativeDialogHeader = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-  return <div className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)}>{children}</div>;
+  return <div className={cn("flex flex-col space-y-1 sm:space-y-1.5 text-center sm:text-left", className)}>{children}</div>;
 };
 
 const NativeDialogTitle = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-  return <h2 className={cn("text-lg font-semibold leading-none tracking-tight", className)}>{children}</h2>;
+  return <h2 className={cn("text-base sm:text-lg font-semibold leading-none tracking-tight", className)}>{children}</h2>;
 };
 
 const NativeDialogDescription = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-  return <p className={cn("text-sm text-muted-foreground", className)}>{children}</p>;
+  return <p className={cn("text-xs sm:text-sm text-muted-foreground", className)}>{children}</p>;
 };
 
 export {

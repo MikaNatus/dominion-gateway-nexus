@@ -29,16 +29,16 @@ const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalPr
   };
 
   return (
-    <NativeDialog open={isOpen} onOpenChange={onClose} className="max-w-4xl">
+    <NativeDialog open={isOpen} onOpenChange={onClose} className="max-w-6xl">
       <NativeDialogContent>
         <NativeDialogHeader className="text-center">
-          <NativeDialogTitle className="text-2xl">Выберите тарифный план</NativeDialogTitle>
-          <NativeDialogDescription>
+          <NativeDialogTitle className="text-xl md:text-2xl">Выберите тарифный план</NativeDialogTitle>
+          <NativeDialogDescription className="text-sm md:text-base">
             Выберите план, который лучше всего подходит для ваших потребностей
           </NativeDialogDescription>
         </NativeDialogHeader>
 
-        <div className="py-6">
+        <div className="py-4 md:py-6">
           <PricingPlans
             currentPlan={currentPlan}
             onUpgrade={handleUpgrade}
