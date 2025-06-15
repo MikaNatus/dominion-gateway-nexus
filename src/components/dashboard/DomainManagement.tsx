@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -160,28 +161,31 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
             {/* Created Date */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-muted-foreground">Дата добавления</Label>
-              <span className="text-sm">
-                {new Date(domain.createdAt).toLocaleDateString('ru-RU')} {new Date(domain.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
-              </span>
+              <div className="text-sm">
+                <div>{new Date(domain.createdAt).toLocaleDateString('ru-RU')}</div>
+                <div className="text-muted-foreground">
+                  {new Date(domain.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* NS Servers Alert */}
           {domain.nsStatus !== 'connected' && (
-            <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 rounded-lg">
               <div className="flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
+                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5" />
                 <div className="flex-1">
-                  <h4 className="font-medium text-amber-800 mb-2">
+                  <h4 className="font-medium text-amber-800 dark:text-amber-300 mb-2">
                     Домен не подключен к нашим Name Servers
                   </h4>
-                  <p className="text-sm text-amber-700 mb-3">
+                  <p className="text-sm text-amber-700 dark:text-amber-400 mb-3">
                     Для работы домена необходимо указать наши NS серверы в настройках домена у вашего регистратора:
                   </p>
                   <div className="space-y-2">
                     {domain.nsServers.map((ns, index) => (
-                      <div key={index} className="flex items-center space-x-2 bg-white rounded px-3 py-2">
-                        <code className="text-sm flex-1">{ns}</code>
+                      <div key={index} className="flex items-center space-x-2 bg-white dark:bg-gray-800 rounded px-3 py-2">
+                        <code className="text-sm flex-1 text-gray-900 dark:text-gray-100">{ns}</code>
                         <Button size="sm" variant="ghost" onClick={() => copyToClipboard(ns)}>
                           <Copy className="h-4 w-4" />
                         </Button>
