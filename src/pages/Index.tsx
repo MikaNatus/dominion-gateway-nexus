@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,15 +50,12 @@ const Index = () => {
             Полный контроль над вашими доменами. DNS управление, SSL сертификаты, 
             мониторинг и защита — всё в одном месте.
           </p>
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center">
             <Link to="/login">
               <Button size="lg" className="text-lg px-8 py-3">
                 Начать бесплатно
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-3">
-              Подробнее
-            </Button>
           </div>
         </div>
       </section>
