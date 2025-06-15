@@ -45,25 +45,24 @@ const NativeDialog = ({ open, onOpenChange, children, className }: NativeDialogP
     <dialog
       ref={dialogRef}
       className={cn(
-        "backdrop:bg-black/80 bg-transparent p-0 max-w-none max-h-none w-full h-full overflow-hidden",
+        "backdrop:bg-black/80 bg-transparent p-0 max-w-none max-h-none w-full h-full overflow-auto",
         "open:animate-in open:fade-in-0 open:zoom-in-95",
         className
       )}
       onClick={handleDialogClick}
       onClose={handleClose}
     >
-      <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+      <div className="flex items-center justify-center min-h-full p-2 sm:p-4">
         <div 
           className={cn(
-            "relative bg-background border rounded-lg shadow-lg p-3 sm:p-6 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto",
+            "relative bg-background border rounded-lg shadow-lg p-3 sm:p-6 my-4",
             "transition-none",
             className
           )}
           onClick={(e) => e.stopPropagation()}
           style={{ 
             width: 'min(calc(100vw - 16px), 1152px)',
-            minWidth: '320px',
-            minHeight: '200px'
+            minWidth: '320px'
           }}
         >
           <button
