@@ -169,13 +169,7 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
             <div className="space-y-2">
               <Label className="text-sm font-medium text-muted-foreground">Дата добавления</Label>
               <span className="text-sm">
-                {new Date(domain.createdAt).toLocaleDateString('ru-RU', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
+                {new Date(domain.createdAt).toLocaleDateString('ru-RU')} {new Date(domain.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
           </div>
