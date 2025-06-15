@@ -17,18 +17,33 @@ interface SubscriptionModalProps {
 
 const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalProps) => {
   useEffect(() => {
-    // Принудительная очистка при размонтировании
+    // Очистка стилей при размонтировании компонента
     return () => {
-      document.body.style.pointerEvents = '';
-      document.body.style.overflow = '';
+      document.body.style.removeProperty('pointer-events');
+      document.body.style.removeProperty('overflow');
     };
   }, []);
 
-  const handleClose = () => {
-    // Убеждаемся что body не заблокирован
-    document.body.style.pointerEvents = '';
-    document.body.style.overflow = '';
-    onClose();
+  useEffect(() => {
+    // Очистка стилей когда модалка закрывается
+    if (!isOpen) {
+      // Добавляем небольшую задержку для корректного закрытия анимации
+      const timer = setTimeout(() => {
+        document.body.style.removeProperty('pointer-events');
+        document.body.style.removeProperty('overflow');
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      // Сразу очищаем стили при закрытии
+      document.body.style.removeProperty('pointer-events');
+      document.body.style.removeProperty('overflow');
+      onClose();
+    }
   };
 
   const handleUpgrade = () => {
@@ -44,7 +59,7 @@ const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalPr
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
           <DialogTitle className="text-2xl">Выберите тарифный план</DialogTitle>

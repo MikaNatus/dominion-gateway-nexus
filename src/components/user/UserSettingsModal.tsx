@@ -58,6 +58,14 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
   });
 
   useEffect(() => {
+    // Очистка стилей при размонтировании компонента
+    return () => {
+      document.body.style.removeProperty('pointer-events');
+      document.body.style.removeProperty('overflow');
+    };
+  }, []);
+
+  useEffect(() => {
     if (!isOpen) {
       // Принудительно очищаем состояние при закрытии
       form.reset();
@@ -67,8 +75,33 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
         new: false,
         confirm: false
       });
+      
+      // Очистка стилей с небольшой задержкой
+      const timer = setTimeout(() => {
+        document.body.style.removeProperty('pointer-events');
+        document.body.style.removeProperty('overflow');
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
   }, [isOpen, form]);
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      form.reset();
+      setShowApiKey(false);
+      setShowPasswords({
+        current: false,
+        new: false,
+        confirm: false
+      });
+      
+      // Сразу очищаем стили при закрытии
+      document.body.style.removeProperty('pointer-events');
+      document.body.style.removeProperty('overflow');
+      onClose();
+    }
+  };
 
   const handleClose = () => {
     form.reset();
@@ -125,7 +158,7 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
