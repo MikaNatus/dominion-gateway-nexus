@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  NativeDialog,
+  NativeDialogContent,
+  NativeDialogHeader,
+  NativeDialogTitle,
+  NativeDialogDescription,
+} from '@/components/ui/native-dialog';
 import {
   Form,
   FormControl,
@@ -113,17 +113,17 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <NativeDialog open={isOpen} onOpenChange={handleClose} className="max-w-2xl">
+      <NativeDialogContent>
+        <NativeDialogHeader>
+          <NativeDialogTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
             Настройки аккаунта
-          </DialogTitle>
-          <DialogDescription>
+          </NativeDialogTitle>
+          <NativeDialogDescription>
             Управление профилем, API ключами и безопасностью
-          </DialogDescription>
-        </DialogHeader>
+          </NativeDialogDescription>
+        </NativeDialogHeader>
 
         <div className="space-y-6">
           {/* Информация о пользователе */}
@@ -299,8 +299,8 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
             </CardContent>
           </Card>
         </div>
-      </DialogContent>
-    </Dialog>
+      </NativeDialogContent>
+    </NativeDialog>
   );
 };
 

@@ -1,12 +1,12 @@
 
 import React from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  NativeDialog,
+  NativeDialogContent,
+  NativeDialogHeader,
+  NativeDialogTitle,
+  NativeDialogDescription,
+} from '@/components/ui/native-dialog';
 import PricingPlans from './PricingPlans';
 
 interface SubscriptionModalProps {
@@ -16,10 +16,6 @@ interface SubscriptionModalProps {
 }
 
 const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalProps) => {
-  const handleClose = () => {
-    onClose();
-  };
-
   const handleUpgrade = () => {
     // Здесь будет логика перехода на премиум план
     console.log('Переход на премиум план');
@@ -33,14 +29,14 @@ const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalPr
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="text-center">
-          <DialogTitle className="text-2xl">Выберите тарифный план</DialogTitle>
-          <DialogDescription>
+    <NativeDialog open={isOpen} onOpenChange={onClose} className="max-w-4xl">
+      <NativeDialogContent>
+        <NativeDialogHeader className="text-center">
+          <NativeDialogTitle className="text-2xl">Выберите тарифный план</NativeDialogTitle>
+          <NativeDialogDescription>
             Выберите план, который лучше всего подходит для ваших потребностей
-          </DialogDescription>
-        </DialogHeader>
+          </NativeDialogDescription>
+        </NativeDialogHeader>
 
         <div className="py-6">
           <PricingPlans
@@ -49,8 +45,8 @@ const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalPr
             onManageSubscription={handleManageSubscription}
           />
         </div>
-      </DialogContent>
-    </Dialog>
+      </NativeDialogContent>
+    </NativeDialog>
   );
 };
 
