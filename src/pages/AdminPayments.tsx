@@ -9,8 +9,21 @@ import { Badge } from '@/components/ui/badge';
 import { CreditCard, Save } from 'lucide-react';
 import AdminHeader from '@/components/AdminHeader';
 
+interface PaymentMethod {
+  name: string;
+  enabled: boolean;
+  address?: string;
+  phone?: string;
+  number?: string;
+  fee: string;
+}
+
+interface PaymentMethods {
+  [key: string]: PaymentMethod;
+}
+
 const AdminPayments = () => {
-  const [paymentMethods, setPaymentMethods] = useState({
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethods>({
     'usdt-trc20': { 
       name: 'USDT TRC20', 
       enabled: true, 
