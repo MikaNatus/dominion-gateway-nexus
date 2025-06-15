@@ -3,7 +3,9 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Users, DollarSign, TrendingUp, CreditCard } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import AdminHeader from '@/components/AdminHeader';
 
 const AdminDashboard = () => {
@@ -30,6 +32,13 @@ const AdminDashboard = () => {
     { month: 'Май', amount: 12000 },
     { month: 'Июн', amount: 12500 }
   ];
+
+  const chartConfig = {
+    amount: {
+      label: "Доходы",
+      color: "hsl(var(--primary))",
+    },
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -144,20 +153,35 @@ const AdminDashboard = () => {
               <CardTitle>Доходы по месяцам</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {revenueData.map((item) => (
-                  <div key={item.month} className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{item.month}</span>
-                    <div className="flex items-center gap-2">
-                      <div 
-                        className="h-2 bg-primary rounded"
-                        style={{ width: `${(item.amount / 15000) * 100}px` }}
-                      />
-                      <span className="text-sm">${item.amount.toLocaleString()}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+                <LineChart data={revenueData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="month" 
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `$${value.toLocaleString()}`}
+                  />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent />}
+                    formatter={(value) => [`$${value.toLocaleString()}`, 'Доходы']}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="amount"
+                    stroke="var(--color-amount)"
+                    strokeWidth={3}
+                    dot={{ fill: "var(--color-amount)", strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, strokeWidth: 2 }}
+                  />
+                </LineChart>
+              </ChartContainer>
             </CardContent>
           </Card>
         </div>
