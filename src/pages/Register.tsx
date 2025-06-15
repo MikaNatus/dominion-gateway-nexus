@@ -7,18 +7,21 @@ import { Label } from '@/components/ui/label';
 import { Crown, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Здесь будет логика аутентификации
-    console.log('Форма входа отправлена:', formData);
+    // Здесь будет логика регистрации
+    console.log('Форма регистрации отправлена:', formData);
     navigate('/dashboard');
   };
 
@@ -42,10 +45,23 @@ const Login = () => {
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Вход в аккаунт</CardTitle>
+            <CardTitle className="text-2xl">Создание аккаунта</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Имя</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Ваше имя"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -83,19 +99,43 @@ const Login = () => {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="Повторите пароль"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+
               <Button type="submit" className="w-full">
-                Войти
+                Создать аккаунт
               </Button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Нет аккаунта?
+                Уже есть аккаунт?
                 <Link
-                  to="/register"
+                  to="/login"
                   className="ml-2 text-primary hover:underline"
                 >
-                  Зарегистрироваться
+                  Войти
                 </Link>
               </p>
             </div>
@@ -106,4 +146,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

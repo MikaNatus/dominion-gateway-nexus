@@ -32,7 +32,7 @@ const Index = () => {
               <Link to="/login">
                 <Button variant="ghost">Войти</Button>
               </Link>
-              <Link to="/login">
+              <Link to="/register">
                 <Button>Регистрация</Button>
               </Link>
             </div>
