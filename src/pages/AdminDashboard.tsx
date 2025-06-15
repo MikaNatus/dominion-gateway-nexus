@@ -170,7 +170,7 @@ const AdminDashboard = () => {
                   />
                   <ChartTooltip 
                     content={<ChartTooltipContent />}
-                    formatter={(value) => [`$${value.toLocaleString()}`, 'Доходы']}
+                    formatter={(value) => [`$${value.toLocaleString()}`]}
                   />
                   <Line
                     type="monotone"
