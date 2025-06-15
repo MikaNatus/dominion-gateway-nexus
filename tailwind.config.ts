@@ -104,6 +104,9 @@ export default {
 					'width': '6px',
 					'height': '6px',
 				},
+				'.scrollbar-thin::-webkit-scrollbar-button': {
+					'display': 'none',
+				},
 				'.scrollbar-track-transparent::-webkit-scrollbar-track': {
 					'background': 'transparent',
 				},
