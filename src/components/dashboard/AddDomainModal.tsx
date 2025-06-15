@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
 import {
-  NativeDialog,
-  NativeDialogContent,
-  NativeDialogDescription,
-  NativeDialogHeader,
-  NativeDialogTitle,
-} from '@/components/ui/native-dialog';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -48,17 +48,17 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
   };
 
   return (
-    <NativeDialog open={isOpen} onOpenChange={handleClose}>
-      <NativeDialogContent className="sm:max-w-md">
-        <NativeDialogHeader>
-          <NativeDialogTitle className="flex items-center space-x-2">
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
             <Plus className="h-5 w-5" />
             <span>Добавить новый домен</span>
-          </NativeDialogTitle>
-          <NativeDialogDescription>
+          </DialogTitle>
+          <DialogDescription>
             Введите имя домена для добавления в систему управления DNS
-          </NativeDialogDescription>
-        </NativeDialogHeader>
+          </DialogDescription>
+        </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -98,8 +98,8 @@ const AddDomainModal = ({ isOpen, onClose, onAdd }: AddDomainModalProps) => {
             </Button>
           </div>
         </form>
-      </NativeDialogContent>
-    </NativeDialog>
+      </DialogContent>
+    </Dialog>
   );
 };
 
