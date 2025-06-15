@@ -16,10 +16,8 @@ interface SubscriptionModalProps {
 }
 
 const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalProps) => {
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      onClose();
-    }
+  const handleClose = () => {
+    onClose();
   };
 
   const handleUpgrade = () => {
@@ -35,7 +33,7 @@ const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalPr
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
           <DialogTitle className="text-2xl">Выберите тарифный план</DialogTitle>

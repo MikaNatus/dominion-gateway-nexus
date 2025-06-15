@@ -58,17 +58,15 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
     }
   });
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      form.reset();
-      setShowApiKey(false);
-      setShowPasswords({
-        current: false,
-        new: false,
-        confirm: false
-      });
-      onClose();
-    }
+  const handleClose = () => {
+    form.reset();
+    setShowApiKey(false);
+    setShowPasswords({
+      current: false,
+      new: false,
+      confirm: false
+    });
+    onClose();
   };
 
   const handleCopyApiKey = async () => {
@@ -115,7 +113,7 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
