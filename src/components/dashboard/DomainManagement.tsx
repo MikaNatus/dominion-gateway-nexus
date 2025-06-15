@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -162,10 +161,7 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
             <div className="space-y-2">
               <Label className="text-sm font-medium text-muted-foreground">Дата добавления</Label>
               <div className="text-sm">
-                <div>{new Date(domain.createdAt).toLocaleDateString('ru-RU')}</div>
-                <div className="text-muted-foreground">
-                  {new Date(domain.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
-                </div>
+                {new Date(domain.createdAt).toLocaleDateString('ru-RU')}
               </div>
             </div>
           </div>
