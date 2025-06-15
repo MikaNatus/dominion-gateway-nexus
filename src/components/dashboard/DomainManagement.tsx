@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Globe, Shield, Server, Plus, Trash2, Copy, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Globe, Shield, Server, Plus, Trash2, Copy, AlertCircle, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Domain {
@@ -96,6 +96,118 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
           </div>
         </div>
       </div>
+
+      {/* Domain Info Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Info className="h-5 w-5" />
+            <span>Информация о домене</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Domain Status */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-muted-foreground">Статус домена</Label>
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${
+                  domain.status === 'active' ? 'bg-green-500' : 
+                  domain.status === 'pending' ? 'bg-yellow-500' : 'bg-red-500'
+                }`} />
+                <span className="text-sm">
+                  {domain.status === 'active' ? 'Активен' : 
+                   domain.status === 'pending' ? 'Ожидание активации' : 'Ошибка'}
+                </span>
+              </div>
+            </div>
+
+            {/* NS Status */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-muted-foreground">Статус Name Servers</Label>
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${
+                  domain.nsStatus === 'connected' ? 'bg-green-500' : 
+                  domain.nsStatus === 'pending' ? 'bg-yellow-500' : 'bg-red-500'
+                }`} />
+                <span className="text-sm">
+                  {domain.nsStatus === 'connected' ? 'Подключен к нашим NS' : 
+                   domain.nsStatus === 'pending' ? 'Ожидание подключения' : 'Не подключен'}
+                </span>
+              </div>
+            </div>
+
+            {/* SSL Mode */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-muted-foreground">Режим SSL</Label>
+              <div className="flex items-center space-x-2">
+                <Shield className={`h-4 w-4 ${
+                  sslMode === 'proxy' ? 'text-blue-500' : 'text-green-500'
+                }`} />
+                <span className="text-sm">
+                  {sslMode === 'proxy' ? 'Проксирование' : 'Прямое подключение'}
+                </span>
+              </div>
+            </div>
+
+            {/* SSL Status */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-muted-foreground">Статус SSL</Label>
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${
+                  domain.sslStatus === 'active' ? 'bg-green-500' : 
+                  domain.sslStatus === 'pending' ? 'bg-yellow-500' : 'bg-red-500'
+                }`} />
+                <span className="text-sm">
+                  {domain.sslStatus === 'active' ? 'SSL активен' : 
+                   domain.sslStatus === 'pending' ? 'Ожидание сертификата' : 'Ошибка SSL'}
+                </span>
+              </div>
+            </div>
+
+            {/* Created Date */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-muted-foreground">Дата добавления</Label>
+              <span className="text-sm">
+                {new Date(domain.createdAt).toLocaleDateString('ru-RU', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </span>
+            </div>
+          </div>
+
+          {/* NS Servers Alert */}
+          {domain.nsStatus !== 'connected' && (
+            <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
+                <div className="flex-1">
+                  <h4 className="font-medium text-amber-800 mb-2">
+                    Домен не подключен к нашим Name Servers
+                  </h4>
+                  <p className="text-sm text-amber-700 mb-3">
+                    Для работы домена необходимо указать наши NS серверы в настройках домена у вашего регистратора:
+                  </p>
+                  <div className="space-y-2">
+                    {domain.nsServers.map((ns, index) => (
+                      <div key={index} className="flex items-center space-x-2 bg-white rounded px-3 py-2">
+                        <code className="text-sm flex-1">{ns}</code>
+                        <Button size="sm" variant="ghost" onClick={() => copyToClipboard(ns)}>
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <Tabs defaultValue="dns" className="space-y-4">
         <TabsList>
