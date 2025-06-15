@@ -294,9 +294,6 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
                           <span className="font-mono text-sm truncate">{record.value}</span>
                           <span className="text-sm text-muted-foreground">TTL: {record.ttl}</span>
                         </div>
-                        <Button size="sm" variant="ghost" onClick={() => copyToClipboard(record.value)}>
-                          <Copy className="h-4 w-4" />
-                        </Button>
                         <Button size="sm" variant="ghost" onClick={() => handleEditRecord(record)}>
                           <Edit className="h-4 w-4" />
                         </Button>
