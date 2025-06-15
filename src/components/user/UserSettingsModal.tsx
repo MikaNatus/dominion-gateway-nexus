@@ -105,6 +105,15 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
     }
   };
 
+  const handleCancelPasswordChange = () => {
+    form.reset();
+    setShowPasswords({
+      current: false,
+      new: false,
+      confirm: false
+    });
+  };
+
   const togglePasswordVisibility = (field: keyof typeof showPasswords) => {
     setShowPasswords(prev => ({
       ...prev,
@@ -290,7 +299,7 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
                     <Button type="submit">
                       Изменить пароль
                     </Button>
-                    <Button type="button" variant="outline" onClick={() => form.reset()}>
+                    <Button type="button" variant="outline" onClick={handleCancelPasswordChange}>
                       Отмена
                     </Button>
                   </div>
