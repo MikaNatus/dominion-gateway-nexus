@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -57,6 +56,19 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
       confirmPassword: ''
     }
   });
+
+  useEffect(() => {
+    if (!isOpen) {
+      // Принудительно очищаем состояние при закрытии
+      form.reset();
+      setShowApiKey(false);
+      setShowPasswords({
+        current: false,
+        new: false,
+        confirm: false
+      });
+    }
+  }, [isOpen, form]);
 
   const handleClose = () => {
     form.reset();

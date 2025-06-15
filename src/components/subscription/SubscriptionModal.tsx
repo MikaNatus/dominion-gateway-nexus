@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,21 @@ interface SubscriptionModalProps {
 }
 
 const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalProps) => {
+  useEffect(() => {
+    // Принудительная очистка при размонтировании
+    return () => {
+      document.body.style.pointerEvents = '';
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  const handleClose = () => {
+    // Убеждаемся что body не заблокирован
+    document.body.style.pointerEvents = '';
+    document.body.style.overflow = '';
+    onClose();
+  };
+
   const handleUpgrade = () => {
     // Здесь будет логика перехода на премиум план
     console.log('Переход на премиум план');
@@ -29,7 +44,7 @@ const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalPr
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
           <DialogTitle className="text-2xl">Выберите тарифный план</DialogTitle>
