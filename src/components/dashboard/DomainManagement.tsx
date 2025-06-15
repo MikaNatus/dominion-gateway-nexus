@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Globe, Shield, Server, Plus, Trash2, Copy, AlertCircle, Info } from 'lucide-react';
+import { ArrowLeft, Globe, Shield, Server, Plus, Trash2, Copy, AlertCircle, Info, Edit } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Domain {
@@ -45,6 +45,7 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
     value: '',
     ttl: 300
   });
+  const [editingRecord, setEditingRecord] = useState<DNSRecord | null>(null);
 
   const handleSslModeChange = (mode: 'proxy' | 'direct') => {
     setSslMode(mode);
@@ -64,6 +65,27 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
     setDnsRecords([...dnsRecords, record]);
     setNewRecord({ type: 'A', name: '', value: '', ttl: 300 });
     toast.success('DNS запись добавлена');
+  };
+
+  const handleEditRecord = (record: DNSRecord) => {
+    setEditingRecord(record);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingRecord || !editingRecord.name || !editingRecord.value) {
+      toast.error('Заполните все поля');
+      return;
+    }
+
+    setDnsRecords(dnsRecords.map(record => 
+      record.id === editingRecord.id ? editingRecord : record
+    ));
+    setEditingRecord(null);
+    toast.success('DNS запись обновлена');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingRecord(null);
   };
 
   const handleDeleteRecord = (id: string) => {
@@ -215,18 +237,74 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
               <div className="space-y-2">
                 {dnsRecords.map((record) => (
                   <div key={record.id} className="flex items-center space-x-4 p-3 border rounded-lg">
-                    <Badge variant="outline">{record.type}</Badge>
-                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      <span className="font-mono text-sm">{record.name}</span>
-                      <span className="font-mono text-sm truncate">{record.value}</span>
-                      <span className="text-sm text-muted-foreground">TTL: {record.ttl}</span>
-                    </div>
-                    <Button size="sm" variant="ghost" onClick={() => copyToClipboard(record.value)}>
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => handleDeleteRecord(record.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {editingRecord?.id === record.id ? (
+                      // Edit mode
+                      <>
+                        <Select 
+                          value={editingRecord.type} 
+                          onValueChange={(value: DNSRecord['type']) => 
+                            setEditingRecord({...editingRecord, type: value})
+                          }
+                        >
+                          <SelectTrigger className="w-20">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="A">A</SelectItem>
+                            <SelectItem value="AAAA">AAAA</SelectItem>
+                            <SelectItem value="CNAME">CNAME</SelectItem>
+                            <SelectItem value="MX">MX</SelectItem>
+                            <SelectItem value="TXT">TXT</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          value={editingRecord.name}
+                          onChange={(e) => setEditingRecord({...editingRecord, name: e.target.value})}
+                          className="w-32"
+                          placeholder="Имя"
+                        />
+                        <Input
+                          value={editingRecord.value}
+                          onChange={(e) => setEditingRecord({...editingRecord, value: e.target.value})}
+                          className="flex-1"
+                          placeholder="Значение"
+                        />
+                        <Input
+                          type="number"
+                          value={editingRecord.ttl}
+                          onChange={(e) => setEditingRecord({...editingRecord, ttl: parseInt(e.target.value)})}
+                          className="w-20"
+                          placeholder="TTL"
+                        />
+                        <div className="flex space-x-2">
+                          <Button size="sm" onClick={handleSaveEdit}>
+                            Сохранить
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={handleCancelEdit}>
+                            Отмена
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      // View mode
+                      <>
+                        <Badge variant="outline">{record.type}</Badge>
+                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <span className="font-mono text-sm">{record.name}</span>
+                          <span className="font-mono text-sm truncate">{record.value}</span>
+                          <span className="text-sm text-muted-foreground">TTL: {record.ttl}</span>
+                        </div>
+                        <Button size="sm" variant="ghost" onClick={() => copyToClipboard(record.value)}>
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => handleEditRecord(record)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => handleDeleteRecord(record.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
