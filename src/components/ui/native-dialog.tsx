@@ -28,8 +28,15 @@ const NativeDialog = ({ open, onOpenChange, children, className }: NativeDialogP
     onOpenChange(false);
   };
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === dialogRef.current) {
+  const handleDialogClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const isClickOutside = 
+      e.clientX < rect.left ||
+      e.clientX > rect.right ||
+      e.clientY < rect.top ||
+      e.clientY > rect.bottom;
+
+    if (isClickOutside) {
       handleClose();
     }
   };
@@ -38,14 +45,14 @@ const NativeDialog = ({ open, onOpenChange, children, className }: NativeDialogP
     <dialog
       ref={dialogRef}
       className={cn(
-        "backdrop:bg-black/80 bg-transparent p-0 max-w-none max-h-none w-full h-full",
+        "backdrop:bg-black/80 bg-transparent p-0 max-w-none max-h-none w-full h-full overflow-hidden",
         "open:animate-in open:fade-in-0 open:zoom-in-95",
         className
       )}
-      onClick={handleBackdropClick}
+      onClick={handleDialogClick}
       onClose={handleClose}
     >
-      <div className="fixed inset-0 flex items-center justify-center p-4">
+      <div className="fixed inset-0 flex items-center justify-center p-4 overflow-hidden">
         <div 
           className="relative bg-background border rounded-lg shadow-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
