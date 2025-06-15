@@ -86,14 +86,6 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
         </Button>
         <div>
           <h1 className="text-2xl font-bold">{domain.name}</h1>
-          <div className="flex items-center space-x-2 mt-1">
-            <Badge variant={domain.status === 'active' ? 'default' : 'secondary'}>
-              {domain.status === 'active' ? 'Активен' : domain.status === 'pending' ? 'Ожидание' : 'Ошибка'}
-            </Badge>
-            <Badge variant={domain.sslStatus === 'active' ? 'default' : 'secondary'}>
-              SSL: {domain.sslStatus === 'active' ? 'Активен' : domain.sslStatus === 'pending' ? 'Ожидание' : 'Ошибка'}
-            </Badge>
-          </div>
         </div>
       </div>
 
@@ -168,9 +160,12 @@ const DomainManagement = ({ domain, onBack }: DomainManagementProps) => {
             {/* Created Date */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-muted-foreground">Дата добавления</Label>
-              <span className="text-sm">
-                {new Date(domain.createdAt).toLocaleDateString('ru-RU')} {new Date(domain.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
-              </span>
+              <div className="text-sm">
+                <div>{new Date(domain.createdAt).toLocaleDateString('ru-RU')}</div>
+                <div className="text-muted-foreground">
+                  {new Date(domain.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </div>
             </div>
           </div>
 
