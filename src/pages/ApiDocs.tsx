@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +14,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import Header from '@/components/Header';
 
 interface ApiEndpoint {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -28,6 +28,28 @@ interface ApiEndpoint {
 
 const ApiDocs = () => {
   const navigate = useNavigate();
+
+  // Mock user data - replace with actual user data from your auth system
+  const mockUser = {
+    name: 'John Doe',
+    email: 'john@example.com',
+    plan: 'premium' as const
+  };
+
+  const handleLogout = () => {
+    // Implement logout logic
+    navigate('/login');
+  };
+
+  const handleSettingsClick = () => {
+    // Implement settings navigation
+    console.log('Settings clicked');
+  };
+
+  const handleSubscriptionClick = () => {
+    // Implement subscription navigation
+    navigate('/payment');
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -332,6 +354,13 @@ const ApiDocs = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header 
+        user={mockUser}
+        onLogout={handleLogout}
+        onSettingsClick={handleSettingsClick}
+        onSubscriptionClick={handleSubscriptionClick}
+      />
+      
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
