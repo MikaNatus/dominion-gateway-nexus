@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Globe, Zap, CheckCircle } from 'lucide-react';
+import { Shield, Crown, Zap, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
@@ -13,8 +12,8 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Globe className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-primary">CloudDNS</span>
+              <Crown className="h-8 w-8 text-primary" />
+              <span className="text-2xl font-bold text-primary">DNSKing</span>
             </div>
             <div className="flex items-center space-x-4">
               <Link to="/login">
@@ -77,7 +76,7 @@ const Index = () => {
 
             <Card>
               <CardHeader>
-                <Globe className="h-12 w-12 text-primary mb-4" />
+                <Crown className="h-12 w-12 text-primary mb-4" />
                 <CardTitle>DNS Управление</CardTitle>
               </CardHeader>
               <CardContent>
@@ -109,7 +108,7 @@ const Index = () => {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Почему выбирают CloudDNS?</h2>
+              <h2 className="text-3xl font-bold mb-6">Почему выбирают DNSKing?</h2>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <CheckCircle className="h-6 w-6 text-primary mt-0.5" />
@@ -157,11 +156,11 @@ const Index = () => {
       <footer className="bg-card border-t border-border py-12">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-center space-x-2 mb-8">
-            <Globe className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">CloudDNS</span>
+            <Crown className="h-8 w-8 text-primary" />
+            <span className="text-2xl font-bold text-primary">DNSKing</span>
           </div>
           <div className="text-center text-muted-foreground">
-            <p>&copy; 2024 CloudDNS. Все права защищены.</p>
+            <p>&copy; 2024 DNSKing. Все права защищены.</p>
           </div>
         </div>
       </footer>
