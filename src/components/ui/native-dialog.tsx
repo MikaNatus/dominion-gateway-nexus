@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
@@ -56,10 +55,15 @@ const NativeDialog = ({ open, onOpenChange, children, className }: NativeDialogP
         <div 
           className={cn(
             "relative bg-background border rounded-lg shadow-lg p-3 sm:p-6 w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto",
-            "max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl",
+            "min-w-[320px] max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl",
+            "transition-none",
             className
           )}
           onClick={(e) => e.stopPropagation()}
+          style={{ 
+            width: 'min(calc(100vw - 16px), 1152px)', 
+            minHeight: '200px'
+          }}
         >
           <button
             onClick={handleClose}
