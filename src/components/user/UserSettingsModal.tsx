@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   NativeDialog,
@@ -112,6 +111,7 @@ const UserSettingsModal = ({ isOpen, onClose, user }: UserSettingsModalProps) =>
       new: false,
       confirm: false
     });
+    onClose();
   };
 
   const togglePasswordVisibility = (field: keyof typeof showPasswords) => {
