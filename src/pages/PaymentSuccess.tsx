@@ -25,7 +25,7 @@ const PaymentSuccess = () => {
             <div className="space-y-2">
               <h1 className="text-3xl font-bold text-green-600">Оплата прошла успешно!</h1>
               <p className="text-lg text-muted-foreground">
-                Добро пожаловать в Премиум план CloudDNS
+                Добро пожаловать в Премиум план DNSKing
               </p>
             </div>
 

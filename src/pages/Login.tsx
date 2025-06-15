@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Globe, Eye, EyeOff } from 'lucide-react';
+import { Crown, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -37,8 +36,8 @@ const Login = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2">
-            <Globe className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">CloudDNS</span>
+            <Crown className="h-8 w-8 text-primary" />
+            <span className="text-2xl font-bold text-primary">DNSKing</span>
           </Link>
         </div>
 
