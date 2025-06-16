@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Pagination,
   PaginationContent,
@@ -15,7 +17,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Users, Search } from 'lucide-react';
+import { Users, Search, Edit } from 'lucide-react';
 import AdminHeader from '@/components/AdminHeader';
 
 const AdminUsers = () => {
@@ -23,6 +25,8 @@ const AdminUsers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPlan, setFilterPlan] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [editingUser, setEditingUser] = useState<any>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   
   const itemsPerPage = 10;
 
@@ -53,6 +57,23 @@ const AdminUsers = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleEditUser = (user: any) => {
+    setEditingUser({...user});
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveUser = () => {
+    // Здесь будет логика сохранения пользователя
+    console.log('Сохранение пользователя:', editingUser);
+    setIsEditDialogOpen(false);
+    setEditingUser(null);
+  };
+
+  const handleToggleUserStatus = (userId: number, currentStatus: string) => {
+    // Здесь будет логика изменения статуса пользователя
+    console.log(`Изменение статуса пользователя ${userId} с ${currentStatus} на ${currentStatus === 'active' ? 'suspended' : 'active'}`);
   };
 
   return (
@@ -123,7 +144,7 @@ const AdminUsers = () => {
                     <TableHead>Статус</TableHead>
                     <TableHead>Дата регистрации</TableHead>
                     <TableHead>Последний вход</TableHead>
-                    <TableHead>Действия</TableHead>
+                    <TableHead className="text-right">Действия</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -149,15 +170,21 @@ const AdminUsers = () => {
                       <TableCell>{user.registered}</TableCell>
                       <TableCell>{user.lastLogin}</TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            Редактировать
-                          </Button>
+                        <div className="flex gap-2 justify-end">
                           <Button 
                             variant={user.status === 'active' ? 'destructive' : 'default'} 
                             size="sm"
+                            onClick={() => handleToggleUserStatus(user.id, user.status)}
                           >
                             {user.status === 'active' ? 'Заблокировать' : 'Разблокировать'}
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditUser(user)}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Редактировать
                           </Button>
                         </div>
                       </TableCell>
@@ -235,6 +262,83 @@ const AdminUsers = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Edit User Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Редактирование пользователя</DialogTitle>
+            </DialogHeader>
+            {editingUser && (
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Имя
+                  </Label>
+                  <Input
+                    id="name"
+                    value={editingUser.name}
+                    onChange={(e) => setEditingUser({...editingUser, name: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="email" className="text-right">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    value={editingUser.email}
+                    onChange={(e) => setEditingUser({...editingUser, email: e.target.value})}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="plan" className="text-right">
+                    План
+                  </Label>
+                  <Select
+                    value={editingUser.plan}
+                    onValueChange={(value) => setEditingUser({...editingUser, plan: value})}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="free">Бесплатный</SelectItem>
+                      <SelectItem value="premium">Премиум</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="status" className="text-right">
+                    Статус
+                  </Label>
+                  <Select
+                    value={editingUser.status}
+                    onValueChange={(value) => setEditingUser({...editingUser, status: value})}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Активный</SelectItem>
+                      <SelectItem value="suspended">Заблокирован</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                    Отмена
+                  </Button>
+                  <Button onClick={handleSaveUser}>
+                    Сохранить
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
