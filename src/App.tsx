@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,10 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import DomainManagement from "./pages/DomainManagement";
+import DomainDNS from "./pages/DomainDNS";
+import DomainSSL from "./pages/DomainSSL";
+import DomainSettings from "./pages/DomainSettings";
 import ApiDocs from "./pages/ApiDocs";
 import Payment from "./pages/Payment";
 import PaymentSuccess from "./pages/PaymentSuccess";
@@ -37,6 +42,10 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/domain/:domainId" element={<DomainManagement />} />
+            <Route path="/domain/:domainId/dns" element={<DomainDNS />} />
+            <Route path="/domain/:domainId/ssl" element={<DomainSSL />} />
+            <Route path="/domain/:domainId/settings" element={<DomainSettings />} />
             <Route path="/api-docs" element={<ApiDocs />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />

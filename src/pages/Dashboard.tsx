@@ -6,7 +6,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Checkbox } from '@/components/ui/checkbox';
 import Header from '@/components/Header';
-import DomainManagement from '@/components/dashboard/DomainManagement';
 import AddDomainModal from '@/components/dashboard/AddDomainModal';
 import SubscriptionModal from '@/components/subscription/SubscriptionModal';
 import UserSettingsModal from '@/components/user/UserSettingsModal';
@@ -30,7 +29,6 @@ const Dashboard = () => {
   const [isAddDomainOpen, setIsAddDomainOpen] = useState(false);
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [isUserSettingsOpen, setIsUserSettingsOpen] = useState(false);
-  const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
   const itemsPerPage = 10;
@@ -111,11 +109,7 @@ const Dashboard = () => {
   };
 
   const handleManageDomain = (domain: Domain) => {
-    setSelectedDomain(domain);
-  };
-
-  const handleBackToDomains = () => {
-    setSelectedDomain(null);
+    navigate(`/domain/${domain.id}`);
   };
 
   const handleSelectDomain = (domainId: string, checked: boolean) => {
@@ -162,38 +156,6 @@ const Dashboard = () => {
   const isAllSelected = paginatedDomains.length > 0 && paginatedDomains.every(domain => selectedDomains.includes(domain.id));
   const isIndeterminate = selectedDomains.length > 0 && !isAllSelected;
 
-  // If a domain is selected, show the domain management view
-  if (selectedDomain) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header
-          user={user}
-          onLogout={handleLogout}
-          onSettingsClick={handleSettingsClick}
-          onSubscriptionClick={handleSubscriptionClick}
-        />
-        <main className="container mx-auto px-4 py-8">
-          <DomainManagement 
-            domain={selectedDomain} 
-            onBack={handleBackToDomains}
-          />
-        </main>
-
-        <SubscriptionModal
-          isOpen={isSubscriptionOpen}
-          onClose={() => setIsSubscriptionOpen(false)}
-        />
-
-        <UserSettingsModal
-          isOpen={isUserSettingsOpen}
-          onClose={() => setIsUserSettingsOpen(false)}
-          user={user}
-        />
-      </div>
-    );
-  }
-
-  // Default dashboard view with domain list
   return (
     <div className="min-h-screen bg-background">
       <Header
